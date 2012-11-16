@@ -1,0 +1,470 @@
+@CHARSET "UTF-8";
+
+.adspot_wrapper {
+	position: relative;
+	margin:0px;
+	float: none;
+	padding:0px;
+	display:inline-block;
+}
+.adspot_clear{clear: both}
+.adspot_btn_add_dot,.adspot_btn_logo,.adspot_icon_product,.adspot_icon_link,.adspot_icon_video,.adspot_layer_info,.adspot_icon_space,.adspot_search_btn
+	{
+	position: absolute;
+}
+
+.adspot_icon_space,.adspot_icon_product,.adspot_icon_link,.adspot_icon_video,.adspot_btn_add_dot a,.adspot_search_btn {
+	width: 31px;
+	height: 31px;
+	background: url(res/sprite.png) left top no-repeat;
+	display: block;
+}
+
+.adspot_btn_add_dot a {
+	background-position: 0px top;
+	text-indent: -2000em;
+	margin-left: 8px;
+	cursor: pointer;
+	width: 24px;
+}
+
+.adspot_btn_logo {
+	right: 0px;
+	top: 0px;
+	display:none;
+	z-index:1700;
+	margin:0px;
+	padding:0px;
+}
+
+.adspot_btn_logo a {
+	background: url(res/logo_tag.png) left top no-repeat;
+	width: 76px;
+	height: 24px;
+	display: block;
+	text-indent: -2000em;
+	opacity: 0.6;
+	cursor: pointer;
+}
+
+.adspot_btn_logo a:hover {
+	opacity: 1;
+}
+
+.adspot_icon_product {
+	background-position: -51px top;
+	z-index: 1699;
+}
+
+.adspot_icon_space {
+	background-position: -117px top;
+	z-index: 1699;
+}
+
+.adspot_icon_link {
+	background-position: -83px top;
+	z-index: 1699;
+}
+.adspot_icon_video {
+	background-position: -175px top;
+	z-index: 1699;
+}
+.adspot_search_btn {
+	background-position: -148px top;
+	right: 4px;
+	top: 32px;
+	opacity: 0.8;
+	width: 24px;
+}
+
+.adspot_search_btn:hover {
+	opacity: 1
+}
+
+
+.adspot_layer_info a {
+	text-decoration: none;
+	font-size: 12px;
+	color: #64b02e;
+	cursor: pointer;
+}
+
+.adspot_layer_info {
+	position: absolute;
+	display: none;
+	box-shadow: 0 1px 7px rgba(0, 0, 0, 0.4), 1px 1px 0 rgba(255, 255, 255, 0.5) inset, -1px -1px 0 rgba(255, 255, 255, 0.5) inset, 1px 1px 0 rgba(0, 0, 0, 0.15), -1px -1px 0 rgba(0, 0, 0, 0.15)!important;
+	border-radius: 4px;
+	font-family: verdana;
+	font-size: 12px;
+	z-index: 1700;
+}
+
+.adspot_layer_inner,.adspot_layer_inner1 {
+	background: #f6f6f6;
+	border-radius: 4px;
+	min-height: 30px;
+	width: 240px;
+	padding: 6px;
+	opacity: 0.96;
+	position: relative;
+}
+
+.adspot_layer_inner {
+	border-radius: 4px 4px 0px 0px
+}
+.adspot_video img{width: 240px;height: 180px}
+.adspot_video .adspot_layer_inner1{opacity: 1}
+.adspot_link_more_info{margin-top: 4px}
+
+.adspot_btn_add_dot {
+    background: #FEFEFE url(res/bgforie.png) left top repeat-x;
+	background: -moz-linear-gradient(#FEFEFE, #E4E4E4);
+	background: -webkit-linear-gradient(#FEFEFE, #E4E4E4);
+	height: 30px;
+	width: 40px;
+	border: 1px solid #aeaeae;
+	border-bottom-right-radius: 4px !important;
+	left: 0px;
+	top: 0px;
+	display: none;
+}
+
+.adspot_btn_add_clicked {
+    background:#378301 url(res/bgforie.png) left -26px repeat-x;
+	background: -moz-linear-gradient(#378301, #55a41c);
+	background: -webkit-linear-gradient(#378301, #55a41c);
+	box-shadow: 0 0 5px rgba(0, 0, 0, 0.25) inset;
+	border: 1px solid #317500;
+}
+
+.adspot_btn_add_clicked a {
+	background-position: -23px top;
+}
+
+.adspot_layer_left,.adspot_layer_right {
+	float: left;
+}
+
+.adspot_layer_right {
+	margin-left: 6px;
+	font-size: 12px;
+	text-align: left;
+	width: 172px;
+}
+
+.adspot_layer_info h1 {
+	font-size: 13px;
+	line-height: 16px;
+	font-weight: bold;
+	margin: 0px 0px 3px 0px;
+}
+
+.adspot_layer_right label {
+	color: #666;
+}
+
+.adspot_layer_left img {
+	width: 60px;
+	height: 60px;
+	border: 1px solid #666;
+}
+
+.adspot_layer_price {
+	padding: 4px 0px;
+}
+
+.adspot_green {
+background:#53ca00;
+	background: -moz-linear-gradient(center top, #53ca00, #3b8d00);
+	background: -webkit-linear-gradient(#53ca00, #3b8d00);
+	color: #FFFFFF;
+	border: 1px solid #409107;
+	text-shadow: 0 -1px rgba(15, 89, 153, 0.4);
+	border-radius: 4px;
+	padding: 3px 2px;
+	margin: 4px 0px 0px 0px;
+}
+
+.adspot_green:hover {
+	border: 1px solid #286001;
+}
+
+.adspot_link h4,.adspot_video h4{
+	margin: 1px 0px;
+	font-size: 14px;
+}
+.adspot_link p,.adspot_video p{
+	margin: 2px 0px 8px 0px;
+	color: #999;
+}
+.adspot_play_btn{width: 33px;height: 33px;display: inline-block;background: url(res/videoplay.gif) no-repeat;opacity: 0.5;
+position: absolute;left: 110px;top: 80px}
+.adspot_video_close{width: 31px;height: 31px;display: inline-block;background: url(res/btn_close.png) no-repeat;position: absolute;right: -14px;top: -14px}
+.adspot_play_btn:hover{opacity: 0.8}
+.adspot_link a:hover{text-decoration: underline}
+.adspot_link img{max-width: 240px}
+.clear {
+	clear: both;
+}
+
+.adspot_edit_area {
+	position: absolute;
+	right: 5px;
+	bottom: 7px;
+}
+
+.adspot_edit_btn {
+	width: 12px;
+	height: 12px;
+	display: inline-block;
+	border: 1px solid #666;
+	border-radius: 2px;
+	background:#E8E8E8 url(res/bgforie.png) left -100px repeat-x;
+	background: -moz-linear-gradient(white, #E8E8E8);
+	background: -webkit-linear-gradient(white, #E8E8E8);
+	border: 1px solid #D0D0D0;
+	line-height: 11px;
+	padding:3px;
+	margin-right: 3px;
+}
+
+a.adspot_green_btn {
+	border: 1px solid #337b00;
+	border-radius: 2px;
+	background:#3f9701 url(res/bgforie.png) left -120px repeat-x;
+	background: -moz-linear-gradient(#50be02, #3f9701);
+	background: -webkit-linear-gradient(#50be02, #3f9701);
+	color: #fff
+}
+
+.adspot_edit_btn:hover,.adspot_edit_edit:hover,.adspot_tab1:hover,.adspot_tab2:hover
+	{
+	background:#DEDEDE;
+	background: -moz-linear-gradient(center top, white, #DEDEDE);
+	border: 1px solid #a7a7a7;
+}
+
+a.adspot_green_btn:hover {
+	border: 1px solid #204e00;
+	border-radius: 2px;
+	background: #378500;
+	background: -moz-linear-gradient(#47ab00, #378500);
+	background: -webkit-linear-gradient(#47ab00, #378500);
+	color: #fff
+}
+
+.adspot_edit_btn i,.adspot_tab1 i,.adspot_tab2 i,.adspot_tab_action i,.adspot_edit_btn i
+	{
+	width: 12px;
+	height: 12px;
+	background: url(res/icon_action.png) no-repeat;
+	display: inline-block;
+}
+
+.adspot_tab1 i,.adspot_tab2 i {
+	background-position: left -58px;
+	position: absolute;
+	left: 28px;
+	top: 6px;
+}
+
+.adspot_tab2 i {
+	background-position: left -87px;
+}
+
+a.adspot_tab_selected i {
+	background-position: left -72px;
+}
+
+.adspot_buy_btn i {
+	background-position: left -126px;
+}
+
+.adspot_add_btn i {
+	background-position: left -112px;
+}
+
+a.adspot_tab_selected i.adspot_i2 {
+	background-position: left -101px;
+}
+
+.adspot_edit_edit i {
+	background-position: left -28px;
+}
+
+.adspot_tab {
+    background:#E4E4E4 url(res/bgforie.png) left -76px repeat-x;
+	background: -moz-linear-gradient(#FEFEFE, #E4E4E4);
+	background: -webkit-linear-gradient(#FEFEFE, #E4E4E4);
+	height: 25px;
+	border-radius: 2px;
+}
+
+.adspot_tab1,.adspot_tab2 {
+	padding: 0 20px 0 50px !important;
+	border-radius: 3px 0px 0px 3px;
+	font-size: 13px;
+	border: 1px solid #CDCDCD;
+	display: inline-block;
+	height: 23px;
+	line-height: 23px;
+	text-align: right;
+	color: #64b02e;
+	position: relative;
+}
+
+.adspot_tab2 {
+	border-radius: 0px 3px 3px 0px;
+}
+
+a.adspot_tab_selected,a.adspot_tab_selected:hover {
+    background: #55a41c url(res/bgforie.png) left -52px repeat-x;
+	background: -moz-linear-gradient(#378301, #55a41c);
+	background: -webkit-linear-gradient(#378301, #55a41c);
+	box-shadow: 0 0 5px rgba(0, 0, 0, 0.25) inset;
+	color: #FFFFFF;
+	text-shadow: 0 1px 0 black;
+	border: 1px solid #317500;
+}
+
+.adspot_tab_con {
+	position: relative;
+	padding: 6px 0px;
+}
+
+.adspot_tab_con label {
+	font-size: 12px;
+	color: #666;
+	margin: 8px 0px 4px 0px;
+	display: block;
+}
+
+.adspot_tab_con input[type="text"],.adspot_tab_con textarea {
+	border-radius: 3px;
+	width: 232px;
+	padding: 4px 2px;
+	border: 1px solid #999;
+	-webkit-box-shadow: 0 3px 4px -4px rgba(0, 0, 0, 0.5) inset;
+	-moz-box-shadow: 0 3px 4px -4px rgba(0, 0, 0, 0.5) inset;
+	box-shadow: 0 3px 4px -4px rgba(0, 0, 0, 0.5) inset;
+	font-size: 12px;
+}
+input[type="text"].input_warning{color: red;}
+.adspot_link_weibo .adspot_img_preview  input[type="text"],.adspot_link_weibo .adspot_img_preview  textarea,.adspot_link_douban .adspot_img_preview  input[type="text"],.adspot_link_douban .adspot_img_preview  textarea,.adspot_link_dianping .adspot_img_preview  input[type="text"],.adspot_link_dianping .adspot_img_preview  textarea,.adspot_link_taobao .adspot_img_preview  input[type="text"],.adspot_link_taobao .adspot_img_preview  textarea,.adspot_link_tweibo .adspot_img_preview  input[type="text"],.adspot_link_tweibo .adspot_img_preview  textarea,.adspot_link_tudou .adspot_img_preview  input[type="text"],.adspot_link_tudou .adspot_img_preview  textarea,.adspot_link_youku .adspot_img_preview  input[type="text"],.adspot_link_youku .adspot_img_preview  textarea,.adspot_link_tmall .adspot_img_preview  input[type="text"],.adspot_link_tmall .adspot_img_preview  textarea,.adspot_link_jingdong .adspot_img_preview  input[type="text"],.adspot_link_jingdong .adspot_img_preview  textarea {
+width: 176px;float: left;margin: 6px 0px 0px 0px;
+}
+.adspot_link_weibo i{width:64px;height:64px;background:#F6F6F6 url(res/social_icons/weibo_64.png) no-repeat -12px 16px;display: block;position: absolute;left: -6px;bottom:-6px;z-index: -1;opacity: 0.4}
+.adspot_link_douban i{width:64px;height:64px;background:#F6F6F6 url(res/social_icons/douban_64.png) no-repeat -12px 16px;display: block;position: absolute;left: -6px;bottom:-6px;z-index: -1;opacity: 0.4}
+.adspot_link_dianping i{width:64px;height:64px;background:#F6F6F6 url(res/social_icons/dianping_64.png) no-repeat -12px 16px;display: block;position: absolute;left: -6px;bottom:-6px;z-index: -1;opacity: 0.4}
+.adspot_link_taobao i{width:64px;height:64px;background:#F6F6F6 url(res/social_icons/taobao_64.png) no-repeat -12px 16px;display: block;position: absolute;left: -6px;bottom:-6px;z-index: -1;opacity: 0.4}
+.adspot_link_tweibo i{width:64px;height:64px;background:#F6F6F6 url(res/social_icons/tweibo_64.png) no-repeat -12px 16px;display: block;position: absolute;left: -6px;bottom:-6px;z-index: -1;opacity: 0.4}
+.adspot_link_tmall i{width:64px;height:64px;background:#F6F6F6 url(res/social_icons/tmall_64.png) no-repeat -12px 16px;display: block;position: absolute;left: -6px;bottom:-6px;z-index: -1;opacity: 0.4}
+.adspot_link_jingdong i{width:64px;height:64px;background:#F6F6F6 url(res/social_icons/jingdong_64.png) no-repeat -12px 16px;display: block;position: absolute;left: -6px;bottom:-6px;z-index: -1;opacity: 0.4}
+.adspot_link_youku i{width:64px;height:64px;background:#F6F6F6 url(res/social_icons/youku_64.png) no-repeat -12px 16px;display: block;position: absolute;left: -6px;bottom:-6px;z-index: -1;opacity: 0.4}
+.adspot_link_tudou i{width:64px;height:64px;background:#F6F6F6 url(res/social_icons/tudou_64.png) no-repeat -12px 16px;display: block;position: absolute;left: -6px;bottom:-6px;z-index: -1;opacity: 0.4}
+.adspot_tab_con input[type="text"]:focus,.adspot_tab_con textarea:hover
+	{
+	border: 1px solid #64b02e;
+}
+.adspot_img_preview img{margin: 6px 0px;max-width: 240px}
+.adspot_linkshow_weibo{background: #F6F6F6 url(res/icon_weibo_16.png) no-repeat right bottom}
+.adspot_linkshow_douban{background: #F6F6F6 url(res/icon_douban_16.png) no-repeat right bottom}
+.adspot_linkshow_sns img{width: 60px;margin: 6px 6px 6px 0px;float: left}
+.adspot_link_weibo .adspot_img_preview img,.adspot_link_douban .adspot_img_preview img,.adspot_link_dianping .adspot_img_preview img,.adspot_link_taobao .adspot_img_preview img,.adspot_link_tweibo .adspot_img_preview img,.adspot_link_tmall .adspot_img_preview img,.adspot_link_youku .adspot_img_preview img,.adspot_link_tudou .adspot_img_preview img,.adspot_link_jingdong .adspot_img_preview img{width: 49px;margin: 6px 6px 6px 0px;border: 1px solid #999;float: left}
+.adspot_linkshow_sns img{margin: 0px 6px 0px 0px}
+.adspot_linkshow_sns .adspot_link_title,.adspot_linkshow_sns .adspot_link_des{width: 172px;float: left}
+
+.adspot_tab_action {
+	border-top: 1px solid #e0e0e0;
+	padding: 4px 0px;
+	text-align: center;
+	background: #fff;
+	border-radius: 0px 0px 4px 4px;
+}
+
+.adspot_tab_action .adspot_edit_btn {
+	width: 48px;
+	padding: 4px;
+	text-align: center;
+	margin: 3px;
+}
+
+.adspot_buy_btn,.adspot_add_btn {
+	width: 42px;
+	padding: 4px 4px 6px 4px;
+	text-align: center;
+	margin: 4px 0px;
+}
+
+.adspot_search_box {
+	background: #fff;
+	border-top: 1px solid #e0e0e0;
+	height: 140px !important;
+	overflow-x: hidden !important;
+	overflow-y: auto !important;
+}
+
+.adspot_search_noresult,.adspot_search_loader {
+	font-size: 12px;
+	margin-top:32px;
+}
+
+.adspot_search_loader {
+	text-align: center;
+	margin-top: 12px;
+}
+
+.adspot_search_image,.adspot_search_info {
+	float: left;
+}
+
+.adspot_search_image {
+	width: 50px;
+	height: 50px;
+	margin-right: 12px;
+}
+
+.adspot_search_info {
+	width: 150px;
+}
+
+.adspot_search_items,.adspot_search_items li {
+	list-style: none;
+	color: #666666 !important;
+	cursor: pointer !important;
+	margin: 0px;
+	padding: 0px;
+}
+
+.adspot_search_items li {
+	min-height: 50px;
+	border-bottom: 1px dotted #ccc;
+	padding: 6px;
+}
+
+.adspot_search_items .adspot_search_item:hover {
+	background: #d2d2d2;
+}
+
+.adspot_search_items h2 {
+	font-size: 12px;
+	font-weight: bold;
+	margin: 0px;
+	color: #333;
+}
+
+.adspot_search_items p {
+	margin: 3px 0px;
+}
+
+.adspot_search_item_selected {
+	background: #d2d2d2;
+	background: -moz-linear-gradient(#e1e4e6, #d2d2d2,#e1e4e6);
+	background: -webkit-linear-gradient(#e1e4e6, #d2d2d2,#e1e4e6);
+	border-bottom: 1px solid #cdcdcd;
+}
+
+.confirm_div {
+	z-index: 1999;
+}
+

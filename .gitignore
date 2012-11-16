@@ -1,0 +1,8 @@
+/.buildpath
+/.project
+/.settings
+
+/static/jquery.min.js
+/static/tagged_images
+/static/upload
+/scripts/operation.log

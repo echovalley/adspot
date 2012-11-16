@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration xmlns="http://logging.apache.org/log4php/">
+ 
+    <appender name="default" class="LoggerAppenderEcho" />
+    
+    <appender name="fileAppender" class="LoggerAppenderFile">
+        <layout class="LoggerLayoutTTCC" />
+        <param name="file" value="/tmp/myLog.log" />
+    </appender>
+ 
+    <logger name="file">
+        <appender_ref ref="fileAppender" />
+    </logger>
+    
+	<logger name="console">
+        <appender_ref ref="default" />
+    </logger>
+    
+</configuration>
