@@ -10,7 +10,7 @@ require_once 'Utils.php';
 $url = rawurldecode(_get('u'));
 
 if (empty($url)) {
-  $url = 'http://huaban.com/popular/?limit=100';
+  $url = 'http://huaban.com/popular/?limit=1';
 }
 //sleep(5);
 //$logger->debug($url);
@@ -76,9 +76,10 @@ function parse_image($url, $dal) {
         $taggedImage['height']   = $img_height;
         $taggedImage['title']    = $img_alt;
         $taggedImage['locate_url'] = $url;
-        $dal->saveImage(&$taggedImage);
+        $dal->saveImage($taggedImage);
         create_thumbnail_60($taggedImage['remote_addr'], $taggedImage['imgid']);
         create_thumbnail_200($taggedImage['remote_addr'], $taggedImage['imgid']);
+        create_thumbnail_600($taggedImage['remote_addr'], $taggedImage['imgid']);
       }
     }
     unset($html);

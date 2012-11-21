@@ -18,7 +18,7 @@ class TaggedImageDal extends DBModel {
 	 * 保存
 	 * @param unknown_type $img
 	 */
-	function saveImage($img) {
+	function saveImage(&$img) {
 		if (empty($img["title"])) {
 			$pieces = explode("/", $img["remote_addr"]);
 			$img["title"] = end($pieces);

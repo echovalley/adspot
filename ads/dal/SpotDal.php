@@ -127,7 +127,7 @@ class SpotDal extends DBModel {
     return $spot;
   }
 
-  function save($spot) {
+  function save(&$spot) {
     $sql = "insert into spots(spot_type,tagged_image_id,x_offset_ratio,y_offset_ratio,link_addr,link_title,link_desc,link_thumb,link_css,product_id,search_tag,created_at,updated_at)" 
       . " values (". $this->safeStr($spot['type']) . "," . $this->safeStr($spot['imgid']) . "," . $this->safeStr($spot['x_offset_ratio']) . "," . $this->safeStr($spot['y_offset_ratio']) . "," . $this->safeStr($spot['link_addr'])
       . ",". $this->safeStr($spot['link_title']) . "," . $this->safeStr($spot['link_desc']) . ",". $this->safeStr($spot['link_thumb']) . "," . $this->safeStr($spot['link_css']) . "," . $this->safeStr($spot['pid']) . "," . $this->safeStr($spot['search_tag']) . ",now(),now())";
@@ -138,7 +138,7 @@ class SpotDal extends DBModel {
     }
   }
 
-  function update($spot) {
+  function update(&$spot) {
     if (empty($spot['id'])) return;
 
     $fields = array('spot_type=' . $this->safeStr($spot['type']));

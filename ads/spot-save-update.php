@@ -59,7 +59,7 @@ if (empty($taggedImage)) {
 	$taggedImage['height']   = $imgHeight;
 	$taggedImage['title']    = $imgTitle;
   $taggedImage['locate_url'] = $_SERVER['HTTP_REFERER'];
-	$imageDal->saveImage(&$taggedImage);
+	$imageDal->saveImage($taggedImage);
 
   create_thumbnail_60($imgSrc, $taggedImage['imgid']);
   create_thumbnail_200($imgSrc, $taggedImage['imgid']);
@@ -95,10 +95,10 @@ $cssobj = parseLinkAddr($spot['link_addr']);
 $spot['link_css'] = $cssobj['css'];
 #print_r($spot);
 if (empty($tspot)) {
-	$spotDal->save(&$spot);
+	$spotDal->save($spot);
 } else {
   if ($tspot['imgid'] == $taggedImage['imgid']) {
-    $spotDal->update(&$spot);
+    $spotDal->update($spot);
   }
 }
 

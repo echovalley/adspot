@@ -483,6 +483,7 @@
 
         setEditDivValue(editDiv, spot);
         unbindImgDivEvent(wrapDiv);
+        unbindNewDivEvent(wrapDiv);//新增时左上角按钮无效
 
         editDiv.show();
       });
@@ -1022,11 +1023,11 @@
         if (imgArrJson.indexOf(src) >= 0) continue;
         var width = img.width();
         var height = img.height();
-        if (width < 200 || height < 200) continue; //小于一定尺寸的图片不打点
+        var excluded_thumb = img.attr("excluded_spot");//特定标记用于排除标点
+        if (width < 200 || height < 200 || excluded_thumb) continue; //小于一定尺寸的图片不打点
 
-        var title = img.attr("title") ? img.attr("title") : (img.attr("alt") ? img.attr("alt") : "");
         var strVal = (imgIndex++ > 0) ? "," : "";
-        strVal += '{"title":"' + title + '","src":"' + src + '","width":' + width + ',"height":' + height +'}';
+        strVal += '{"src":"' + src + '","width":' + width + ',"height":' + height +'}';
         imgArrJson += strVal;
       }
 
