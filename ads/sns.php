@@ -9,7 +9,7 @@ function parse($url) {
   if (empty($obj)) { return ''; }
   $obj['css'] = $cssobj['css'];
 	//print_r($obj);
-	return json_encode($obj);
+	return urldecode(json_encode($obj));
 }
 
 function parse_sinaweibo($url) {
@@ -268,7 +268,7 @@ function parse_normal($url) {
 	$obj = array();
 	try {
 		$encoding = 'utf-8';
-		$cv = $html->find('meta[http-equiv="Content-Type"]', 0);
+		$cv = $html->find('meta[content]', 0);
 		if ($cv) {
 			if (strpos($cv->content, 'gb2312') || strpos($cv->content, 'gbk')) {
 				$encoding = 'gbk';

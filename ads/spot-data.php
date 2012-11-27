@@ -28,6 +28,10 @@ $taggedImageDal = new TaggedImageDal($con);
 $spotDal = new SpotDal($con);
 
 $wid = $websiteDal->getWebsiteId($wbcode);
+if(empty($wid)){
+	echo "{}";
+	exit;
+}
 $modify = ($websiteDal->verify_host_user()) ? 1 : 0; 
 
 $images = array();

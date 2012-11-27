@@ -25,7 +25,7 @@ class TaggedImageDal extends DBModel {
 		}
 		$sql = "insert into tagged_images(website_id,remote_addr,width,height,title,created_at,updated_at,locate_url) "
 		."values (" . $this->safeStr($img['wid']) . "," . $this->safeStr($img["remote_addr"]) . ", " . $this->safeStr($img["width"]) . "," . $this->safeStr($img["height"]) . "," . $this->safeStr($img["title"]) . ",now(),now()," . $this->safeStr($img["locate_url"]) . ")";
-    #$this->logger->debug($sql);
+    $this->logger->debug($sql);
 		$count = mysql_query($sql, $this->conn);
 		
 		if ($count > 0) {

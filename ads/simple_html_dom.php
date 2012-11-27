@@ -847,7 +847,21 @@ class simple_html_dom {
     // load html from file
     function load_file() {
         $args = func_get_args();
-        $this->load(call_user_func_array('file_get_contents', $args), true);
+				$opts = array(
+					'http' => array(
+					    'method' => "GET",
+							'header' => "Accept: text/html,application/xhtml+xml,application/xml\r\n" .
+													"Accept-Charset: GBK,utf-8\r\n" .
+													"Accept-Encoding: gzip,deflate,sdch\r\n" .
+													"Accept-language: zh-CN\r\n" .
+													"User-Agent: Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.1.6) Gecko/20091201 Firefox/3.5.6\r\n"
+							)
+				);
+				$context = stream_context_create($opts);
+				$args[1] = FALSE;
+				$args[2] = $context;
+print_r($args);
+        $this->load(call_user_func_array('fie_get_contents', $args), true);
         // Per the simple_html_dom repositiry this is a planned upgrade to the codebase.
         // Throw an error if we can't properly load the dom.
         if (($error=error_get_last())!==null) {
