@@ -10,7 +10,7 @@ require_once 'Utils.php';
 $url = rawurldecode(_get('u'));
 
 if (empty($url)) {
-  $url = 'http://huaban.com/popular/?limit=1';
+  $url = 'http://huaban.com/popular/?limit=100';
 }
 //sleep(5);
 //$logger->debug($url);
@@ -70,7 +70,7 @@ function parse_image($url, $dal) {
         $img_alt = $obj['pin']['raw_text'];
 
         $taggedImage = array();
-        $taggedImage['wid'] = 1;
+        $taggedImage['wid'] = 2;
         $taggedImage['remote_addr'] = 'http://img.hb.aicdn.com/' . $img_key;
         $taggedImage['width']    = $img_width;
         $taggedImage['height']   = $img_height;

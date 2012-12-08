@@ -6,15 +6,15 @@ function parse($url) {
 	$url = getAbsoluteURL(trim($url));
 	$cssobj = parseLinkAddr($url);
 	$obj = call_user_func_array($cssobj['func'], $cssobj['params']);
-  if (empty($obj)) { return ''; }
-  $obj['css'] = $cssobj['css'];
+	if (empty($obj)) { return ''; }
+	$obj['css'] = $cssobj['css'];
 	//print_r($obj);
 	return urldecode(json_encode($obj));
 }
 
 function parse_sinaweibo($url) {
 	$html = file_get_html($url);
-  if (empty($html)) { return ''; }
+	if (empty($html)) { return ''; }
 	$obj = array();
 	try {
 		$_thumb = $html->find('img.por', 0);
@@ -25,7 +25,7 @@ function parse_sinaweibo($url) {
 		if ($_title) {
 			$txt = $_title->plaintext;
 			$txt = str_replace("\r", "", $txt);
-			$pieces = split("\s|&nbsp;|\n", $txt); 
+			$pieces = preg_split("/&nbsp;|\n/", $txt); 
 			$obj['title'] = $pieces[0];
 			$obj['desc'] = $pieces[4];
 		}
@@ -40,7 +40,7 @@ function parse_sinaweibo_ct($url) {
 	preg_match('/^(http:\/\/weibo\.cn\/\d+)\/\w+$/', $url, $m);
 	$obj = parse_sinaweibo($m[1]);
 	$html = file_get_html($url);
-  if (empty($html)) { return ''; }
+	if (empty($html)) { return ''; }
 	try {
 		$_desc = $html->find('span.ctt', 0);
 		if ($_desc) $obj->desc = preg_replace('/^:/', '', $_desc->plaintext);
@@ -54,7 +54,7 @@ function parse_sinaweibo_ct($url) {
 
 function parse_txweibo($url) {
 	$html = file_get_html($url);
-  if (empty($html)) { return ''; }
+	if (empty($html)) { return ''; }
 	$obj = array();
 	$content = $html->innertext;
 	try {
@@ -63,7 +63,7 @@ function parse_txweibo($url) {
 			$obj['thumb'] = preg_replace("/30$/", "100", $_thumb->src);
 		}
 		if (preg_match('/<img (?:.*?)class="img-br"\/>(.*?)</', $content, $m)) {
-			$obj['title'] = preg_replace ("/\(.*\)&nbsp;/", "", $m[1]);
+			$obj['title'] = preg_replace ('/\(.*\)&nbsp;/', "", $m[1]);
 		}
 		if (preg_match('/<br\/>简介：(.*?)</', $content, $n)) {
 			$obj['desc'] = str_replace ("&#160;", "", $n[1]);
@@ -78,7 +78,7 @@ function parse_txweibo($url) {
 
 function parse_360buy($url) {
 	$html = file_get_html($url);
-  if (empty($html)) { return ''; }
+	if (empty($html)) { return ''; }
 	$obj = array();
 	try {
 		foreach ($html->find('script') as $js) {
@@ -106,9 +106,9 @@ function parse_360buy($url) {
 
 function parse_douban($url, $t) {
 	$html = file_get_html($url);
-  if (empty($html)) { return ''; }
+	if (empty($html)) { return ''; }
 	$obj = array();
-	//echo $html->innertext;
+	echo $html->innertext;
 	try {
 		$_thumb = $html->find('a.nbg img', 0);
 		if ($_thumb) $obj['thumb'] = $_thumb->src;
@@ -151,7 +151,7 @@ function parse_douban($url, $t) {
 
 function parse_taobao($url) {
 	$html = file_get_html($url);
-  if (empty($html)) { return ''; }
+	if (empty($html)) { return ''; }
 	$obj = array();
 	//echo $html->innertext;
 	try {
@@ -179,7 +179,7 @@ function parse_tmall($url) {
 
 function parse_dianping($url) {
 	$html = file_get_html($url);
-  if (empty($html)) { return ''; }
+	if (empty($html)) { return ''; }
 	$obj = array();
 	//echo $html->innertext;
 	try {
@@ -198,7 +198,7 @@ function parse_dianping($url) {
 
 function parse_youku($url) {
 	$html = file_get_html($url);
-  if (empty($html)) { return ''; }
+	if (empty($html)) { return ''; }
 	$obj = array();
 	try {
 		$obj['title'] = preg_replace('/- 优酷视频 - 在线观看/', '', $html->find('head title', 0)->innertext);
@@ -222,12 +222,12 @@ function parse_youku($url) {
 
 function parse_tudou($url) {
 	$html = file_get_html($url);
-  if (empty($html)) { return ''; }
+	if (empty($html)) { return ''; }
 	$obj = array();
 	try {
 		$js = $html->find('body script', 0)->innertext;
-		if (preg_match("/pic = '(\S+)'/", $js, $m)) { $obj['thumb'] = $m[1]; }
-		if (preg_match('/kw = "(.+?)"/', $js, $m)) { $obj['title'] = $obj['desc'] = iconv("gbk", "utf-8", $m[1]); }
+		if (preg_match('/pic: \'(\S+)\'/', $js, $m)) { $obj['thumb'] = $m[1]; }
+		if (preg_match('/kw: \'(.+?)\'/', $js, $m)) { $obj['title'] = $obj['desc'] = iconv("gbk", "utf-8", $m[1]); }
 		unset($html);
 		return $obj;
 	} catch (Exception $e) {
@@ -237,12 +237,12 @@ function parse_tudou($url) {
 
 function parse_tudou_pl($url, $vid) {
 	$html = file_get_html($url);
-  if (empty($html)) { return ''; }
+	if (empty($html)) { return ''; }
 	$obj = array();
 	try {
 		$js = $html->find('body script', 0)->innertext;
 		if (preg_match('/listData = (\[.+?\]);/', $js, $m)) {
-			$plstr = preg_replace("/([{ ,])(\w+)(\s*):/", "\${1}\"\${2}\":", $m[1]);
+			$plstr = preg_replace('/([{ ,])(\w+)(\s*):/', "\${1}\"\${2}\":", $m[1]);
 			$plobjs = json_decode(iconv("gbk", "utf-8", $plstr));
 			//print_r($plobjs);
 			foreach ($plobjs as $k) {
@@ -264,7 +264,7 @@ function parse_tudou_pl($url, $vid) {
 
 function parse_normal($url) {
 	$html = file_get_html($url);
-  if (empty($html)) { return ''; }
+	if (empty($html)) { return ''; }
 	$obj = array();
 	try {
 		$encoding = 'utf-8';

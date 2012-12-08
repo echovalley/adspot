@@ -2,7 +2,11 @@
 /.project
 /.settings
 
-/static/jquery.min.js
+/ads/.buildpath
+/ads/.project
+/ads/.settings
+
+static/jquery.min.js
 /static/tagged_images
 /static/upload
 /scripts/operation.log

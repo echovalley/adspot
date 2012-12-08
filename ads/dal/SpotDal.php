@@ -22,7 +22,7 @@ class SpotDal extends DBModel {
 		
 		$spots = array();
 		
-		while ($row = mysql_fetch_assoc($result)){
+		while (($row = mysql_fetch_assoc($result)) != false) {
 			if ($row['type'] == SpotDal::SPOT_TYPE_PRODUCT && $row['open'] != 1) {
 				$row['aname'] = '';
 				$row['homepage'] = '';
@@ -32,10 +32,9 @@ class SpotDal extends DBModel {
 				$row['player'] = $cssobj['player'];
 				$row['vid'] = $cssobj['vid'];
 			}
-      if (substr($row['pdct_thumb'], 0, 7) != 'http://') {
-        $row['pdct_thumb'] = 'http://' . $_SERVER["SERVER_NAME"] . '/static' . $row['pdct_thumb'];
-      }
-
+			if (substr($row['pdct_thumb'], 0, 7) != 'http://') {
+				$row['pdct_thumb'] = 'http://' . $_SERVER["SERVER_NAME"] . '/static' . $row['pdct_thumb'];
+			}
 			$spots[] = $row;
 		}
 		mysql_free_result($result);	
@@ -67,7 +66,7 @@ class SpotDal extends DBModel {
 		
 		$imgArrTmp = array();
 		
-		while ($row = mysql_fetch_assoc($result)){
+		while (($row = mysql_fetch_assoc($result)) != false) {
 			if ($row['type'] == SpotDal::SPOT_TYPE_PRODUCT && $row['open'] != 1) {
 				$row['aname'] = '';
 				$row['homepage'] = '';
@@ -77,9 +76,9 @@ class SpotDal extends DBModel {
 				$row['player'] = $cssobj['player'];
 				$row['vid'] = $cssobj['vid'];
 			}
-      if (substr($row['pdct_thumb'], 0, 7) != 'http://') {
-        $row['pdct_thumb'] = 'http://' . $_SERVER["SERVER_NAME"] . '/static' . $row['pdct_thumb'];
-      }
+			if (substr($row['pdct_thumb'], 0, 7) != 'http://') {
+				$row['pdct_thumb'] = 'http://' . $_SERVER["SERVER_NAME"] . '/static' . $row['pdct_thumb'];
+			}
 
 			$imgArrTmp[] = $row;
 		}
@@ -168,12 +167,12 @@ class SpotDal extends DBModel {
     $host = _getDomainByReferrer();
     if (empty($spot_id) || empty($host)) return false;
 
-    if ($host == get_backend_host()) return false;
+    if ($host == get_backend_host()) return true;
 
     $token = false;
     $sql = 'select url from spots s inner join tagged_images t on s.tagged_image_id=t.id inner join websites w on w.id=t.website_id where w.status=1 and s.id=' . $this->safeStr($spot_id);
     $rs = mysql_query($sql, $this->conn);
-    while ($row = mysql_fetch_array($rs)) {
+    while (($row = mysql_fetch_array($rs)) != false) {
       if (belong_to_domain($host, $row['url'])) {
         $token = true;
         break;

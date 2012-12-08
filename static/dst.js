@@ -4,7 +4,6 @@
 	var logHost = window['_adspot_host'] ? window['_adspot_host'] + '/log/' : "http://www.adspot.cn/log/";
 	var wbCode = window['_adspot_wb_code'];
 
-	var DEFAULT_THUMB = resHost + 'res/pro.jpg';
 	var SPOT_TYPE_SPACE = "0";
 	var SPOT_TYPE_PRODUCT = "1";
 	var SPOT_TYPE_LINK = "2";
@@ -54,13 +53,22 @@
 		if (need_log()) {
 			return (spot.type == SPOT_TYPE_LINK) ? dataHost + "pixel.php?t=sc&sid=" + spot.id + "&dest=" + encodeURIComponent(spot.link_addr) : dataHost + "pixel.php?t=sc&sid=" + spot.id + "&pid=" + spot.pid + "&dest=" + encodeURIComponent(spot.click_target);
 		} else {
-			return (spot.type == SPOT_TYPE_LINK) ? spot.link_addr : spot.click_target;
+			var _addr = spot.type == SPOT_TYPE_LINK ? spot.link_addr : spot.click_target;
+		  if (/^((https?):\/\/)/i.test(_addr)) {
+        return _addr;
+      } else {
+        return 'http://' + _addr;
+      }
 		}
 	}
 
 	function getOriginalClickTarget(url) {
-		var m = url.match(/&dest=(.*?)$/);
-		return decodeURIComponent(m[1]);
+    if (need_log()) {
+		  var m = url.match(/&dest=(.*?)$/);
+		  return decodeURIComponent(m[1]);
+    } else {
+      return url;
+    }
 	}
 
 	function validateURL(url, nullable) {
@@ -156,8 +164,6 @@
 			str += 	'spot-div-id=' + spot.id + '><div class="adspot_layer_inner1">';
 			if (spot.link_thumb) {
 				str += '<a href="' + cktarget + '" target="_blank"><img class="adspot_link_pic" src="' + spot.link_thumb + '" /></a>'; 
-			} else if (spot.link_css) {
-				str += '<a href="' + cktarget + '" target="_blank"><img class="adspot_link_pic" src="' + DEFAULT_THUMB + '" /></a>'; 
 			}
 
 			if (spot.link_css && spot.link_css == 'video') {
@@ -171,7 +177,7 @@
 				str += '<div class="adspot_edit_area"><a title="编辑信息" class="adspot_edit_btn adspot_edit_button"><i></i></a><a title="删除锚点" class="adspot_edit_btn adspot_edit_edit adspot_edit_delete"><i></i></a></div>';
 			}
 
-			str += '</div></div>';
+			str += '</div>';
 			return str;
 		}
 
@@ -526,15 +532,15 @@
 					editDiv.find(".adspot_layer_inner .tab_con_link").hide();
 					editDiv.find(".adspot_layer_inner .tab_con_product").show();
 					editDiv.find(".adspot_search_box").show();
-					if (editDiv.find(".submit").hasClass("disabled")) {
-						editDiv.find(".submit").removeClass("disabled").addClass("adspot_green_btn");
+					if (editDiv.find(".submit").hasClass("adspot_disabled")) {
+						editDiv.find(".submit").removeClass("adspot_disabled").addClass("adspot_green_btn");
 					}
 				} else {
 					editDiv.find(".adspot_layer_inner .tab_con_product").hide();
 					editDiv.find(".adspot_search_box").hide();
 					editDiv.find(".adspot_layer_inner .tab_con_link").show();
 					if (editDiv.find(".adspot_link_more_info").is(':hidden')) {
-						editDiv.find(".submit").removeClass("adspot_green_btn").addClass("disabled");
+						editDiv.find(".submit").removeClass("adspot_green_btn").addClass("adspot_disabled");
 					}
 				}
 				loadDiv.hide();
@@ -712,15 +718,14 @@
 				loadDiv.hide();
 				linkDiv.show();
 				$("div.adspot_link_more_info").show();
-				if (editDiv.find(".submit").hasClass("disabled")) {
-					editDiv.find(".submit").removeClass("disabled").addClass("adspot_green_btn");
+				if (editDiv.find(".submit").hasClass("adspot_disabled")) {
+					editDiv.find(".submit").removeClass("adspot_disabled").addClass("adspot_green_btn");
 				}
+				removeCssClass(linkDiv);
 				if (obj) {
 					if (obj["thumb"]) {
 						linkDiv.find(".link_thumb").val(obj["thumb"]);
 						linkDiv.find("div.adspot_img_preview img").attr("src", obj["thumb"]);
-					} else {
-						linkDiv.find("div.adspot_img_preview img").attr("src", DEFAULT_THUMB);
 					}
 					if (obj["title"]) {
 						linkDiv.find("div.adspot_img_preview input").val(obj["title"]);
@@ -729,10 +734,10 @@
 						linkDiv.find("div.adspot_img_preview textarea").val(obj["desc"]);
 					}
 					if (obj["css"]) {
-						removeCssClass(linkDiv);
 						linkDiv.addClass("adspot_link_" + obj["css"]);
 					}
 				} else {
+			    var _link_target = linkDiv.find(".link_addr").val();
 					linkDiv.find("div.adspot_img_preview input").val(_link_target);
 				}
 			}
@@ -899,9 +904,6 @@
 				editDiv.find("div.adspot_link_more_info").show();
 				if (spot.link_css) {
 					editDiv.find("div.tab_con_link").addClass("adspot_link_" + spot.link_css);
-					if (!spot.link_thumb) {
-						editDiv.find("div.adspot_img_preview img").attr("src", DEFAULT_THUMB);
-					}
 				}
 				editDiv.find("div.adspot_tab_action").show();
 				editDiv.find("a.adspot_tab2").trigger("click");
@@ -922,7 +924,6 @@
 				spot.type = SPOT_TYPE_LINK;
 				spot.link_addr = getOriginalClickTarget(infoDiv.find("a").attr("href"));
 				spot.link_thumb = infoDiv.find("img").attr("src");
-				if (spot.link_thumb == DEFAULT_THUMB) spot.link_thumb = ''; 
 				spot.link_title = infoDiv.find("h4").text();
 				spot.link_desc = infoDiv.find("p.adspot_link_des").text();
 				spot.link_css = infoDiv.attr("lsc");

@@ -72,7 +72,7 @@
 .adspot_search_btn {
 	background-position: -148px top;
 	right: 4px;
-	top: 32px;
+	top: 34px;
 	opacity: 0.8;
 	width: 24px;
 }
@@ -106,12 +106,15 @@
 	width: 240px;
 	padding: 6px;
 	opacity: 0.96;
+	text-align: left;
 	position: relative;
 }
 
 .adspot_layer_inner {
 	border-radius: 4px 4px 0px 0px
 }
+.adspot_layer_inner1 p,.adspot_layer_inner p{line-height: normal;text-indent: 0px;padding: 0px;margin: 0px}
+.adspot_layer_inner1 label{font-size: 12px;color: #666;vertical-align: inherit}
 .adspot_video img{width: 240px;height: 180px}
 .adspot_video .adspot_layer_inner1{opacity: 1}
 .adspot_link_more_info{margin-top: 4px}
@@ -170,7 +173,7 @@
 }
 
 .adspot_layer_price {
-	padding: 4px 0px;
+	padding: 4px 0px 2px 0px;
 }
 
 .adspot_green {
@@ -195,6 +198,7 @@ background:#53ca00;
 }
 .adspot_link p,.adspot_video p{
 	margin: 2px 0px 8px 0px;
+	font-size: 12px;
 	color: #999;
 }
 .adspot_play_btn{width: 33px;height: 33px;display: inline-block;background: url(res/videoplay.gif) no-repeat;opacity: 0.5;
@@ -348,6 +352,7 @@ a.adspot_tab_selected,a.adspot_tab_selected:hover {
 	-moz-box-shadow: 0 3px 4px -4px rgba(0, 0, 0, 0.5) inset;
 	box-shadow: 0 3px 4px -4px rgba(0, 0, 0, 0.5) inset;
 	font-size: 12px;
+	margin:2px 0px;
 }
 input[type="text"].input_warning{color: red;}
 .adspot_link_weibo .adspot_img_preview  input[type="text"],.adspot_link_weibo .adspot_img_preview  textarea,.adspot_link_douban .adspot_img_preview  input[type="text"],.adspot_link_douban .adspot_img_preview  textarea,.adspot_link_dianping .adspot_img_preview  input[type="text"],.adspot_link_dianping .adspot_img_preview  textarea,.adspot_link_taobao .adspot_img_preview  input[type="text"],.adspot_link_taobao .adspot_img_preview  textarea,.adspot_link_tweibo .adspot_img_preview  input[type="text"],.adspot_link_tweibo .adspot_img_preview  textarea,.adspot_link_tudou .adspot_img_preview  input[type="text"],.adspot_link_tudou .adspot_img_preview  textarea,.adspot_link_youku .adspot_img_preview  input[type="text"],.adspot_link_youku .adspot_img_preview  textarea,.adspot_link_tmall .adspot_img_preview  input[type="text"],.adspot_link_tmall .adspot_img_preview  textarea,.adspot_link_jingdong .adspot_img_preview  input[type="text"],.adspot_link_jingdong .adspot_img_preview  textarea {
@@ -388,7 +393,11 @@ width: 176px;float: left;margin: 6px 0px 0px 0px;
 	text-align: center;
 	margin: 3px;
 }
-
+a.adspot_disabled{background-color: #E6E6E6;
+color: #999;
+    box-shadow: none;
+    cursor: default;
+    opacity: 0.65;}
 .adspot_buy_btn,.adspot_add_btn {
 	width: 42px;
 	padding: 4px 4px 6px 4px;
@@ -451,10 +460,12 @@ width: 176px;float: left;margin: 6px 0px 0px 0px;
 	font-weight: bold;
 	margin: 0px;
 	color: #333;
+	line-height: normal;
 }
 
 .adspot_search_items p {
 	margin: 3px 0px;
+		text-indent: 0;
 }
 
 .adspot_search_item_selected {

@@ -1,7 +1,13 @@
 #!/bin/bash
 
-src_log_file=/tmp/httpd_log/adspot_access_log
-dest_log_dir=/Volumes/Doc/logs
+src_log_file=/usr/local/nginx/logs/kb.access.log
+dest_log_dir=/var/log/adspot
+
+if [ ! -f $src_log_file ]; then
+  echo "Purge aborted!"
+  echo "No such file - $src_log_file"
+  exit
+fi
 
 current_hour_path=`date +%Y%m/%d`
 current_hour_file=`date +%H.log`
@@ -13,13 +19,12 @@ latest_zip_file=$latest_log_file.gz
 
 [ -d $latest_log_path ] || mkdir -p $latest_log_path
 
-if [ -f $latest_zip_file ]
-then
+if [ -f $latest_zip_file ]; then
   tmp_file=$latest_log_path/part.tmp
   gzip -d $latest_zip_file
   mv $src_log_file $tmp_file && cat $latest_log_path/part.tmp >> $latest_log_file && rm $tmp_file
 else
-  sudo mv $src_log_file $latest_log_file
+  mv $src_log_file $latest_log_file
 fi
 
 
@@ -42,8 +47,10 @@ gzip $basic_log_file
 
 gzip $latest_log_file
 
-#kill -USR1 `cat /usr/local/nginx/logs/nginx.pid`
-kill -USR1 `cat /var/run/httpd.pid`
+#nginx
+kill -USR1 `cat /usr/local/nginx/logs/nginx.pid`
+#apache
+#kill -USR1 `cat /var/run/httpd.pid`
 
 echo "`date +"[%Y-%m-%d %H:%M:%S]"` $latest_log_file" >> operation.log
 

@@ -68,7 +68,8 @@ class WebsiteDal extends DBModel {
     $sql = 'select w.url from users u inner join websites_users wu on u.id=wu.user_id inner join websites w on wu.website_id=w.id where w.status=1 and u.user_code=' . $this->safeStr($user_code);
     $this->logger->debug($sql);
     $rs = mysql_query($sql, $this->conn);
-    while ($row = mysql_fetch_array($rs)) {
+    
+    while (($row = mysql_fetch_array($rs)) != false) {
       if (belong_to_domain($host, $row['url'])) {
         $token = true;
         break;

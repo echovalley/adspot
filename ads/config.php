@@ -1,7 +1,5 @@
 <?php 
 
-date_default_timezone_set('Asia/Chongqing');
-
 require_once "log4php/Logger.php";
 
 Logger::configure('log4php.xml');

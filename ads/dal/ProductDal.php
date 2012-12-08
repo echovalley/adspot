@@ -24,7 +24,7 @@ class ProductDal extends DBModel {
 
     $pdctArr= array();
     $i = 0;
-    while ($row = mysql_fetch_assoc($rs)) {
+    while (($row = mysql_fetch_assoc($rs)) != false) {
       $pdctArr[$i++] = $row["product_id"];
     }
     return $pdctArr;
