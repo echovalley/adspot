@@ -1,6 +1,8 @@
 <?php
 
 require_once "simple_html_dom.php";
+require_once "Utils.php";
+#require_once 'Services/Soundcloud.php';
 
 function parse($url) {
 	$url = getAbsoluteURL(trim($url));
@@ -8,7 +10,6 @@ function parse($url) {
 	$obj = call_user_func_array($cssobj['func'], $cssobj['params']);
 	if (empty($obj)) { return ''; }
 	$obj['css'] = $cssobj['css'];
-	//print_r($obj);
 	return urldecode(json_encode($obj));
 }
 
@@ -108,7 +109,6 @@ function parse_douban($url, $t) {
 	$html = file_get_html($url);
 	if (empty($html)) { return ''; }
 	$obj = array();
-	echo $html->innertext;
 	try {
 		$_thumb = $html->find('a.nbg img', 0);
 		if ($_thumb) $obj['thumb'] = $_thumb->src;
@@ -262,31 +262,60 @@ function parse_tudou_pl($url, $vid) {
 	}
 }
 
+function parse_soundcloud($url) {
+  $default_consumer_key = '1dac4bc2bec5efe1f9928bd4ea4bafdb';
+	$html = file_get_html("https://api.soundcloud.com/v1/resolve?url=" . rawurlencode($url) . "&consumer_key=" . $default_consumer_key);
+	if (empty($html)) { return ''; }
+	$obj = array();
+	try {
+		$_title = $html->find('title', 0);
+		if ($_title) {
+			$obj['title'] = mb_convert_encoding($_title->innertext, 'UTF-8', 'HTML-ENTITIES');
+		}
+		$_desc = $html->find('description', 0);
+		if ($_desc) {
+			$obj['desc'] = mb_convert_encoding($_desc->innertext, 'UTF-8', 'HTML-ENTITIES');
+		}
+    $_trackid =  $html->find('track id', 0);
+    if ($_trackid) {
+			$obj['extra'] = $_trackid->innertext;
+    }
+		unset($html);
+		return $obj;
+	} catch (Exception $e) {
+		return '';
+  }
+}
+
 function parse_normal($url) {
 	$html = file_get_html($url);
 	if (empty($html)) { return ''; }
 	$obj = array();
 	try {
 		$encoding = 'utf-8';
-		$cv = $html->find('meta[content]', 0);
-		if ($cv) {
-			if (strpos($cv->content, 'gb2312') || strpos($cv->content, 'gbk')) {
-				$encoding = 'gbk';
-			}
-		}
-		$_title = $html->find('head title', 0);
-		if ($_title) {
-			$obj['title'] = ($encoding == 'utf-8') ? $_title->innertext: iconv('gbk', 'utf-8', $_title->innertext);
-		}
-		$_desc = $html->find('meta[name="description"]', 0);
-		if ($_desc) {
-			$obj['desc'] = ($encoding == 'utf-8') ? $_desc->content: iconv('gbk', 'utf-8', $_desc->content);
-		}
-		unset($html);
-		return $obj;
-	} catch (Exception $e) {
-		return '';
-	}
+    $desc = '';
+    foreach ($html->find('meta') as $node) {
+      if (empty($node)) continue;
+      if ($node->charset) {
+        $encoding = strtolower($node->charset);
+      } elseif (preg_match('/charset=([\w-]+)/', $node->content, $m)) {
+        $encoding = strtolower($m[1]);
+      } elseif (strtolower($node->name) == 'description') {
+        $desc = $node->content;
+      }
+    }
+    $_title = $html->find('head title', 0);
+    if ($_title) {
+      $obj['title'] = ($encoding == 'utf-8') ? $_title->innertext: iconv('gbk', 'utf-8', $_title->innertext);
+    }
+    if ($desc) {
+      $obj['desc'] = ($encoding == 'utf-8') ? $desc: iconv('gbk', 'utf-8', $desc);
+    }
+    unset($html);
+    return $obj;
+  } catch (Exception $e) {
+    return '';
+  }
 }
 
 ?>

@@ -1,6 +1,7 @@
 <?php 
 
 header('Content-type: application/json; charset=utf-8');
+#header('P3P: CP="CUR ADM OUR NOR STA NID"');
 
 require_once 'config.php';
 require_once 'Utils.php';
@@ -41,7 +42,7 @@ foreach ($imgArr as $i => $imgSrc) {
   $spots = $spotDal->getSpotsByImg($image['imgid']);
   $images[$i] = array('imgid' => $image['imgid'], 'remote_addr' => $imgSrc->src, 'spots' => $spots, 'modify' => $modify);
 }
-#print_r($images);
+//print_r($images);
 echo _get('callback') . '(' . json_encode($images) . ')';
 
 mysql_close($con);

@@ -8,7 +8,10 @@
 	var SPOT_TYPE_PRODUCT = "1";
 	var SPOT_TYPE_LINK = "2";
 
+  var DEFAULT_PLAYER_BGIMAGE = resHost + 'res/soundcloud_bg.jpg';
+
 	var last_log_timestamp = 0;
+  var sns_sites = new Array(['新浪微博','16-weibo.gif','http://www.weibo.com'],['腾讯微博','16-qqweibo.gif','http://t.qq.com'],['优酷视频','16-youku.gif','http://www.youku.com'],['豆瓣网','16-douban.gif','http://www.douban.com'],['土豆网','16-tudou.gif',' http://www.tudou.com'],['大众点评网','16-dianping.gif','http://www.dianping.com'],['淘宝网','16-taobao.gif','http://www.taobao.com'],['天猫商城','16-tmall.gif','http://www.tmall.com'],['京东商城','16-360buy.gif','http://www.360buy.com'],['SoundCloud','16-soundcloud.gif','http://www.soundcloud.com']);
 
 	//获取字母数字随机数。
 	function genRandomStr(l) {
@@ -20,7 +23,7 @@
 
 	//判断变量是否为空
 	function isEmpty(v) {
-		return (typeof(v) == 'undefined' || v == 'undefined' || v == null || v == "") ? 1 : 0;
+		return (typeof(v) == 'undefined' || v == 'undefined' || v == null || v == 'null' || v == "");
 	}
 
 	function check_jquery_version(v) {
@@ -108,6 +111,13 @@
 
 		//构建编辑spot表单DIV
 		function getEditDiv() {
+      var snslist = '';
+			for(var s in sns_sites) {
+				var site_name = sns_sites[s][0];
+        var site_icon = resHost + 'res/social_icons/' + sns_sites[s][1];
+        var site_link = sns_sites[s][2];
+        snslist += '<a href="' + site_link + '" title="' + site_name + '" target="_blank"><img src="' + site_icon + '" alt="' + site_name + '" /></a>';
+      }
 			return	'<div class="adspot_layer_info add-edit-adspot">' +
 				'<div class="adspot_layer_inner">' +
 				'<div class="adspot_tab">' +
@@ -115,24 +125,27 @@
 				'</div>' +
 				'<div class="adspot_tab_con tab_con_product">' +
 				'<label>请输入你要链接的商品关键字</label>' +
-				'<input type="text" placeholder="比如：婚纱、地毯等"><a class="adspot_search_btn"></a>' +
+				'<div class="adspot_search"><input type="text" placeholder="比如：婚纱、地毯等"><a class="adspot_search_btn"></a></div>' +
 				'</div>' +
 				'<div class="adspot_tab_con tab_con_link" style="display:none;">' +
 				'<input type="text" class="link_addr" placeholder="请输入链接地址后按回车">' +
 				'<div class="adspot_link_more_info" style="display:none">' +
 				'<input type="text" class="link_thumb" placeholder="输入图片的URL">' +
 				'<div class="adspot_img_preview"><img src="">' +
+				'<div class="adspot_sc_player" style="display:none"></div>' +
 				'<input type="text" class="link_title" placeholder="请输入标题">' +
 				'<textarea type="text" class="link_desc" placeholder="请输入描述"></textarea>' +
+				'<input type="hidden" class="link_extra">' +
 				'<div class="adspot_clear"></div>' +
 				'</div>' +
 				'<i></i>' +
 				'</div>' +
+				'<div class="adspot_social_list"><p>试试输入下面网站的内容网址</p>' + snslist + '</div>' +
 				'</div>' +
 				'<div style="display: block; opacity: 1;" class="adspot_search_box">' +
 				'<div style="display: none;" class="adspot_search_noresult"><p>你要寻找的商品不存在，请试试其他关键字 </p></div>' +
 				'</div>' +
-				'<div class="adspot_search_loader" style="display: none;"><img class="adspot_search_spinner" alt="Searching..." src="' + resHost + 'res/spinner-white.gif"><p>链接分析中，请稍候…</p></div>' +
+				'<div class="adspot_search_loader" style="display: none;"><img class="adspot_search_spinner" alt="Searching..." src="' + resHost + 'res/spinner-white.gif"><p>请稍候…</p></div>' +
 				'</div>' +
 				'<div class="adspot_tab_action"><a class="adspot_edit_btn cancel" title="取消">取 消</a><a class="adspot_edit_btn adspot_green_btn submit" title="确定">确 定</a></div>' +
 				'</div>';
@@ -154,7 +167,13 @@
 
 			var divclass = 'adspot_layer_info adspot_info_detail ';
 			if (spot.link_css) {
-				divclass += (spot.link_css == 'video') ? 'adspot_video' : 'adspot_link adspot_linkshow_sns';
+        if (spot.link_css == 'video') {
+				  divclass += 'adspot_video';
+        } else if (spot.link_css == 'soundcloud') {
+				  divclass += 'adspot_link_soundcloud';
+        } else {
+				  divclass += 'adspot_linkshow_sns';
+        }
 			}
 
 			var cktarget = generateClickTarget(spot);
@@ -165,10 +184,18 @@
 			if (spot.link_thumb) {
 				str += '<a href="' + cktarget + '" target="_blank"><img class="adspot_link_pic" src="' + spot.link_thumb + '" /></a>'; 
 			}
-
-			if (spot.link_css && spot.link_css == 'video') {
-				str += '<a href="#" class="adspot_play_btn" player="' + spot.player + '" vid="' + spot.vid + '" title="点击播放视频"></a>';
-				str += '<a href="#" class="adspot_video_close" style="display:none" title="点击关闭视频"></a>'
+      if (spot.link_css == 'soundcloud') {
+				str += '<a href="' + cktarget + '" target="_blank"><img class="adspot_link_pic" src="' + DEFAULT_PLAYER_BGIMAGE +'" /></a>'; 
+      }
+			if (spot.link_css) {
+        if (spot.link_css == 'video') {
+				  str += '<a href="#" class="adspot_play_btn" player="' + spot.player + '" vid="' + spot.vid + '" title="点击播放视频"></a>';
+				  str += '<a href="#" class="adspot_video_close" style="display:none" title="点击关闭视频"></a>'
+        } else if (spot.link_css == 'soundcloud') {
+          var trackid = spot.link_extra;
+				  str += '<a href="#" class="adspot_play_btn" player="soundcloud" vid="' + trackid + '" title="点击播放音乐"></a>';
+				  str += '<a href="#" class="adspot_video_close" style="display:none" title="点击关闭音乐"></a>'
+        }
 			}
 
 			str += '<a class="adspot_link_title" href="' + cktarget + '" target="_blank"><h4>' + spot.link_title + '</h4></a><p class="adspot_link_des">' + d + '</p><div class="adspot_clear"></div></div>';
@@ -184,16 +211,25 @@
 		//Product类型的spotDiv
 		function getProductSpotDiv(spot, modify) {
 			var cktarget = generateClickTarget(spot);
+      var pricedisplay = (spot.pstatus == 2) ? '商品暂时下架' : spot.pdct_price;
+
 			var div = '<div class="adspot_layer_info adspot_info_detail" spot-div-id=' + spot.id +'>' + 
 				'<div class="adspot_layer_inner1">' +
 				'<div class="adspot_layer_left"><a href="' + cktarget + '" target="_blank"><img alt="' + spot.pname + '" src="' + spot.pdct_thumb + '"></a></div>' +
-				'<div class="adspot_layer_right"><h1 pid=' + spot.pid + ' search_tag="' + spot.search_tag + '">' + spot.pname + '</h1>' +
-				'<div class="adspot_layer_price"><label>购买价格：</label><span>' + spot.pdct_price + '</span></div>';
+				'<div class="adspot_layer_right"><h1 pid=' + spot.pid + ' search_tag="' + spot.search_tag + '" pstatus="' + spot.pstatus + '">' + spot.pname + '</h1>' +
+        '<div class="adspot_layer_price"><label>购买价格：</label><span>' + pricedisplay + '</span></div>';
 
 			if (spot.aname) {
 				div += '<div class="adspot_layer_source"><label>信息来源：</label><a href="' + spot.homepage + '" target="_blank">' + spot.aname + '</a></div>'; 
 			}
-			div += 	'<div class="adspot_layer_shop"><a class="adspot_edit_btn adspot_buy_btn adspot_green_btn" href="' + cktarget + '" target="_blank">购买</a></div></div><div class="clear"></div>';
+
+			div += 	'<div class="adspot_layer_shop">';
+      if (spot.pstatus == 2) {
+        div += '<a class="adspot_edit_btn adspot_buy_btn adspot_disabled">购买</a>';
+      } else {
+        div += '<a class="adspot_edit_btn adspot_buy_btn adspot_green_btn" href="' + cktarget + '" target="_blank">购买</a>';
+      }
+      div += '</div></div><div class="clear"></div>';
 
 			if (modify) {
 				div += '<div class="adspot_edit_area"><a title="编辑信息" class="adspot_edit_btn adspot_edit_button"><i></i></a><a title="删除锚点" class="adspot_edit_btn adspot_edit_edit adspot_edit_delete"><i></i></a></div>';
@@ -213,9 +249,15 @@
 		//圆点div
 		function getDotDiv(spot, parent_img, show) {
 			var display = (show) ? "display:block;" : "display:none;";
-			var clas = '';
+			var clas = 'adspot_icon_link';
 			if (spot.type == SPOT_TYPE_LINK) {
-				clas = (spot.link_css && spot.link_css == 'video') ? 'adspot_icon_video' : 'adspot_icon_link';
+        if (spot.link_css) {
+          if (spot.link_css == 'video') {
+            clas = 'adspot_icon_video';
+          } else if (spot.link_css == 'soundcloud') {
+				    clas = 'adspot_icon_sound';
+          }
+        }
 			} else if (spot.type == SPOT_TYPE_PRODUCT) {
 				clas = 'adspot_icon_product';
 			} else {
@@ -245,6 +287,10 @@
 			return str;
 		}
 
+    function getSoundCloudPlayer(trackid) {
+      return '<embed allowscriptaccess="sameDomain" src="https://player.soundcloud.com/player.swf?url=http%3A%2F%2Fapi.soundcloud.com%2Ftracks%2F' + trackid +'&amp;color=74ba3b&amp;auto_play=true" type="application/x-shockwave-flash" width="240" height="80"></embed>';
+    }
+
 		/**
 		 * 删除页面覆盖
 		 */
@@ -257,32 +303,28 @@
 		 * 创建页面覆盖
 		 */
 		function createOverlay() {
-			var iTop = 0;
-			if ($.browser.mozilla) {
-				iTop = $('html').scrollTop();
-			} else {
-				iTop = $(document.body).scrollTop();
-			} 
-
 			var overlay = $('<div></div>').addClass("adspot-overlay");
 
-			overlay
-				.css({
+			overlay.css({
 					background: '#000000',
 					opacity: 0.5,
-					top: iTop,
+					top: 0,
+					bottom: 0,
 					left: 0,
+					right: 0,
 					width: '100%',
 					height: '100%',
 					position: 'absolute',
 					zIndex: 1998,
 					display: 'none',
-					overflow: 'hidden'
+					overflow: 'hidden',
+					position: 'fixed'
 				});
 
 			$(document.body).append(overlay);
-			$(document.body).css('overflow', 'hidden')
-				$("body div.adspot-overlay").show();
+			var overlay = $("body div.adspot-overlay");
+			overlay.show();
+			return overlay;
 		}
 
 		//绑定删除确认层的事件
@@ -293,7 +335,7 @@
 			var cancelBtn = confirmDiv.find(".adspot_edit_btn_cancel");
 			cancelBtn.unbind("click");	
 			cancelBtn.click(function() {
-				confirmDiv.hide();
+				confirmDiv.remove();
 				bindShowSpotEvent(spotDiv);
 				removeOverlay();
 			});
@@ -302,7 +344,7 @@
 			submitBtn.unbind("click");
 			submitBtn.click(function() {
 				confirmDiv.parent().find(".adspot_icon[adspot-id='" + spotId + "']").remove(); //删除对应的锚点				
-				confirmDiv.hide();
+				confirmDiv.remove();
 				bindShowSpotEvent(spotDiv);
 				removeOverlay();
 				spotDiv.hide();
@@ -327,16 +369,20 @@
 			delBtn.unbind("click");
 			delBtn.click(function(e) {
 				e.preventDefault();
-				var confirmDiv = wrapDiv.find(".confirm_div");
 
-				var left = parseInt(dotDiv.css("left")) + 20;
-				var top =  parseInt(dotDiv.css("top"));
+				var overlay = createOverlay();
+				overlay.after(getConfirmDiv());
+				var confirmDiv = $(".confirm_div");
 
-				var h =  spotDiv.height();
-				confirmDiv.css({left: left, top: (top + h/2)});
+				confirmDiv.css({
+					'left': '50%',
+					'top': '50%',
+					'margin-left': '-120px',
+					'margin-top': '-40px',
+					'position':'fixed'
+				});
 				confirmDiv.attr("edit-adspot-id", spotId); //设置要操作的ID，方便以后处理
 
-				createOverlay();
 				confirmDiv.show();
 
 				spotDiv.unbind("hover");
@@ -373,8 +419,6 @@
 					_linkthumb.change(function() {
 						if (validateURL(_linkthumb.val())) {
 							editDiv.find("div.adspot_img_preview img").attr("src", _linkthumb.val());
-						} else {
-							editDiv.find("div.adspot_img_preview img").attr("src", "");
 						}
 					});
 				}
@@ -407,18 +451,25 @@
 			var player = playBtn.attr("player");
 			var vid = playBtn.attr("vid");
 
-			var embedstr = '';
+			innerDiv.css( { overflow: 'visible' } );
+
+			var embedstr = '<div class="adspot_videoplay_box">';
+      var expand_width = 400;
 			if (player == 'youku') {
-				embedstr = '<div class="adspot_videoplay_box"><embed height="330" allowscriptaccess="never" style="visibility: visible; display: block !important; " pluginspage="http://get.adobe.com/cn/flashplayer/" flashvars="isAutoPlay=true" width="400" allowfullscreen="true" quality="hight" src="http://player.youku.com/player.php/sid/' + vid + '/v.swf" type="application/x-shockwave-flash" wmode="transparent"></embed></div>';
+				embedstr += '<embed height="330" allowscriptaccess="never" style="visibility: visible; display: block !important; " pluginspage="http://get.adobe.com/cn/flashplayer/" flashvars="isAutoPlay=true" width="400" allowfullscreen="true" quality="hight" src="http://player.youku.com/player.php/sid/' + vid + '/v.swf" type="application/x-shockwave-flash" wmode="transparent"></embed>';
 			} else if (player == 'tudou') {
-				embedstr = '<div class="adspot_videoplay_box"><embed src="http://www.tudou.com/v/' + vid + '/&autoPlay=true/v.swf" type="application/x-shockwave-flash" allowscriptaccess="never" allowfullscreen="true" wmode="opaque" width="400" height="330"></embed></div>';
-			}
+				embedstr += '<embed src="http://www.tudou.com/v/' + vid + '/&autoPlay=true/v.swf" type="application/x-shockwave-flash" allowscriptaccess="never" allowfullscreen="true" wmode="opaque" width="400" height="330"></embed>';
+			} else if (player == 'soundcloud') {
+        embedstr += getSoundCloudPlayer(vid);
+        expand_width = 240;
+      }
+      embedstr += '</div>';
 
 			thumblink.hide();
 			playBtn.hide();
 
 			spotDiv.find("div.adspot_layer_inner1").animate({
-				width: '400'
+				width: expand_width
 			}, 300, function() {
 				// Animation complete.
 			});
@@ -444,7 +495,7 @@
 			thumblink.show();
 			playBtn.show();
 			closeBtn.hide();
-			innerDiv.css('width', 240);
+			innerDiv.css( { width: 240} );
 
 			bindDotDivEvent(wrapDiv);
 			bindNewDivEvent(wrapDiv);
@@ -515,7 +566,7 @@
 			var tabBtn = editDiv.find("div.adspot_tab a");
 			var searchBtn = editDiv.find("a.adspot_search_btn");
 			var searchDiv = editDiv.find("div.adspot_search_box"); 
-			var inputText = editDiv.find("div.tab_con_product>input:text");
+			var inputText = editDiv.find("div.tab_con_product input:text");
 			var cancelBtn = editDiv.find(".adspot_tab_action a.cancel");
 			var submitBtn = editDiv.find(".adspot_tab_action a.submit");
 			var linkDiv = editDiv.find("div.tab_con_link");
@@ -624,6 +675,9 @@
 				bindNewDivEvent(wrapDiv);
 
 				editDiv.hide();
+        //为了防止关闭edit层会还会在后台播放音频的情况(firefox下会出现)
+        $("div.adspot_sc_player").html('');
+        $("div.adspot_sc_player").hide();
 			});
 
 			//点击提交
@@ -649,6 +703,7 @@
 					spot.link_title = editDiv.find("input.link_title").val();
 					spot.link_thumb = editDiv.find("input.link_thumb").val();
 					spot.link_desc = editDiv.find("textarea.link_desc").val();
+					spot.link_extra = editDiv.find("input.link_extra").val();
 					var _classes = getCssClass(linkDiv);
 					if (_classes) spot.link_css = _classes.slice(12);
 					if (!spot.link_title) {//必e填写title
@@ -689,7 +744,14 @@
 					if (_spot.type == SPOT_TYPE_PRODUCT) {
 						dotclass = 'adspot_icon_product';
 					} else {
-						dotclass = (_spot.link_css && _spot.link_css == 'video') ? 'adspot_icon_video' : 'adspot_icon_link';
+            dotclass = 'adspot_icon_link';
+            if (_spot.link_css) {
+              if (_spot.link_css == 'video') {
+                dotclass = 'adspot_icon_video';
+              } else if (_spot.link_css == 'soundcloud') {
+                dotclass = 'adspot_icon_sound';
+              }
+            }
 					}
 					if (!_spot['first']) {
 						$("div.adspot_info_detail[spot-div-id='" + sid + "']").remove();
@@ -711,6 +773,9 @@
 				bindDotDivEvent(wrapDiv);
 				bindNewDivEvent(wrapDiv);
 				editDiv.hide();
+        //为了防止关闭edit层会还会在后台播放音频的情况(firefox下会出现)
+        $("div.adspot_sc_player").html('');
+        $("div.adspot_sc_player").hide();
 			});
 
 			//link成功后调用，如果超时（error）也调用，但传入空对象
@@ -722,406 +787,445 @@
 					editDiv.find(".submit").removeClass("adspot_disabled").addClass("adspot_green_btn");
 				}
 				removeCssClass(linkDiv);
-				if (obj) {
-					if (obj["thumb"]) {
-						linkDiv.find(".link_thumb").val(obj["thumb"]);
-						linkDiv.find("div.adspot_img_preview img").attr("src", obj["thumb"]);
-					}
-					if (obj["title"]) {
-						linkDiv.find("div.adspot_img_preview input").val(obj["title"]);
-					}
-					if (obj["desc"]) {
-						linkDiv.find("div.adspot_img_preview textarea").val(obj["desc"]);
-					}
-					if (obj["css"]) {
-						linkDiv.addClass("adspot_link_" + obj["css"]);
-					}
-				} else {
-			    var _link_target = linkDiv.find(".link_addr").val();
-					linkDiv.find("div.adspot_img_preview input").val(_link_target);
-				}
-			}
-			//link类型输入地址后回车
-			linkDiv.find(".link_addr").unbind("keyup");
-			linkDiv.find(".link_addr").keyup(function(e) {
-				$(this).removeClass("input_warning");
-				if (e.which != 13) return; //仅响应回车
-				var _link_target = $(this).val();
-				if (!validateURL(_link_target)) {
-					$(this).addClass("input_warning");
-					return;
-				}
-				var linkUrl = dataHost + "spot-link.php?u=" + encodeURIComponent(_link_target);
+        if (obj) {
+          if (obj["thumb"]) {
+            linkDiv.find(".link_thumb").val(obj["thumb"]);
+            var thumb_img = linkDiv.find("div.adspot_img_preview img");
+            thumb_img.show();
+            thumb_img.attr("src", obj["thumb"]);
+          } else {
+            //IE下空的img标签会出现一个X的占位符号，所以这里隐去
+            linkDiv.find("div.adspot_img_preview img").hide();
+          }
+          if (obj["title"]) {
+            linkDiv.find("div.adspot_img_preview input.link_title").val(obj["title"]);
+          }
+          if (obj["desc"]) {
+            linkDiv.find("div.adspot_img_preview textarea").val(obj["desc"]);
+          }
+          if (obj["css"]) {
+            linkDiv.addClass("adspot_link_" + obj["css"]);
+          }
+          if (obj["css"] == "soundcloud") {
+            linkDiv.find(".link_thumb").hide();
+            var trackid = obj["extra"];
+            linkDiv.find("input.link_extra").val(trackid);
+            $("div.adspot_sc_player").html(getSoundCloudPlayer(trackid));
+            $("div.adspot_sc_player").show();
+          }
+        } else {
+          var _link_target = linkDiv.find(".link_addr").val();
+          linkDiv.find("div.adspot_img_preview img").hide();
+          linkDiv.find("div.adspot_img_preview input.link_title").val(_link_target);
+        }
+      }
+      //link类型输入地址后回车
+      linkDiv.find(".link_addr").unbind("keyup");
+      linkDiv.find(".link_addr").keyup(function(e) {
+        $(this).removeClass("input_warning");
+        if (e.which != 13) return; //仅响应回车
+        var _link_target = $(this).val();
+        if (!validateURL(_link_target)) {
+          $(this).addClass("input_warning");
+          return;
+        }
+        var linkUrl = dataHost + "spot-link.php?u=" + encodeURIComponent(_link_target);
 
-				linkDiv.find(".link_thumb").val("");
-				linkDiv.find("div.adspot_img_preview :text").val("");
-				linkDiv.find("div.adspot_img_preview textarea").val("");
-				linkDiv.find("div.adspot_img_preview img").attr("src", "");
-				linkDiv.hide();
-				loadDiv.show();
+        linkDiv.find(".link_thumb").val("");
+        linkDiv.find("div.adspot_img_preview :text").val("");
+        linkDiv.find("div.adspot_img_preview textarea").val("");
+        linkDiv.find("div.adspot_img_preview img").attr("src", "");
+        linkDiv.find("input.link_thumb").show();
+        linkDiv.find("div.adspot_sc_player").html('');
+        linkDiv.hide();
+        loadDiv.show();
 
-				$.getJSON(linkUrl + "&callback=?", function(obj) {
-					link_success(obj);
-				}).error(function(jqXHR, status, errorThrown) {
-					link_success(null);
-				});
-			});
+        $.getJSON(linkUrl + "&callback=?").success(function(obj) {
+          link_success(obj);
+        }).fail(function(jqXHR, status, errorThrown) {
+          link_success(null);
+        });
 
-		}
+      });
 
-		function getCssClass(div) {
-			var _arr_c = div.attr("class").split(" ");
-			for (var i in _arr_c) {
-				if (_arr_c[i].indexOf("adspot_link_") != -1) {
-					return _arr_c[i];
-				}
-			}
-			return '';
-		}
+    }
 
-		//移除link_css样式,以adspot_link_开头
-		function removeCssClass(div) {
-			if (div) div.removeClass(getCssClass(div));
-		}
+    function getCssClass(div) {
+      var _arr_c = div.attr("class").split(" ");
+      for (var i in _arr_c) {
+        if (_arr_c[i].indexOf("adspot_link_") != -1) {
+          return _arr_c[i];
+        }
+      }
+      return '';
+    }
 
-
-		//绑定展示广告事件
-		function bindShowSpotEvent(spotDiv) {
-			spotDiv.unbind("hover");
-			spotDiv.hover (
-					function() {
-						clearTimeout(kb_timeoutId);
-						$(this).show();
-					},
-					function() {
-						kb_timeoutId = setTimeout(function() {
-							clearTimeout(kb_timeoutId);
-							spotDiv.fadeOut(150);
-						}, FADE_INTERVAL);
-					}
-					);
-		}
-
-		//取消绑定锚点悬浮
-		function unbindDotDivEvent(wrapDiv) {
-			wrapDiv.find("div.adspot_icon").unbind("hover");
-		}
-
-		//绑定锚点悬浮事件
-		function bindDotDivEvent(wrapDiv) {
-			var dotDiv = wrapDiv.find("div.adspot_icon");
-			dotDiv.unbind("hover");
-			dotDiv.hover(
-					function() {
-						$(this).css("opacity", "1");
-
-						var offset = $(this).position();
-						var id = $(this).attr("adspot-id");
-						var pIdDiv = $("div[spot-div-id=" + id + "]");
-
-						//获取该点属于那个图片
-						var spotImgIndex = $(this).parent().attr("adspot-img-index");
-						//设置显示的spot是由那个图片下的锚点触发。
-						pIdDiv.attr("adspot-img-index", spotImgIndex);
-						bindShowSpotEvent(pIdDiv);
-						pIdDiv.css({left:offset.left + 24, top:offset.top + 24});
-
-						clearTimeout(kb_timeoutId);
-						$("div.adspot_info_detail").not(pIdDiv).fadeOut(150);
-						if (pIdDiv.css("display") == "none") {
-							pIdDiv.fadeIn(150);
-						}
-
-						var product_id = pIdDiv.find("h1").attr("pid");
-						if (need_log()) log_spot_hover(id, product_id);
-					},
-				function() {
-					$(this).css("opacity", "0.7");
-					var id = $(this).attr("adspot-id");
-
-					kb_timeoutId = setTimeout(function() {
-						clearTimeout(kb_timeoutId);
-						var pIdDiv = $("div[spot-div-id=" + id + "]");
-						if (pIdDiv.css("display") == "block") {
-							pIdDiv.fadeOut(150);
-						}
-					}, FADE_INTERVAL);
-				}
-			);
-		}
-
-		//绑定左上角的新增按钮事件。
-		function bindNewDivEvent(wrapDiv) {
-			var newBtn = wrapDiv.find(".adspot_btn_add_dot a");
-			newBtn.unbind("click");
-			newBtn.click(function(e) {
-				//e.preventDefault();
-				if ($(this).parent().hasClass("adspot_btn_add_clicked")) {
-					unbindImgDivEvent(wrapDiv); //取消页面点击添加锚点事件。
-					bindDotDivEvent(wrapDiv);  //绑定鼠标移到锚点，显示对应广告事件。
-					newBtn.attr("title", "进入添加模式");
-				} else {
-					bindImgDivEvent(wrapDiv);
-					unbindDotDivEvent(wrapDiv);
-					newBtn.attr("title", "进入正常模式");
-					$("div.adspot_info_detail").fadeOut(150);
-				}
-				$(this).parent().toggleClass("adspot_btn_add_clicked");
-			});
-		}
-
-		//绑定左上角的新增按钮事件。
-		function unbindNewDivEvent(wrapDiv) {
-			wrapDiv.find(".adspot_btn_add_dot a").unbind("click");
-		}
+    //移除link_css样式,以adspot_link_开头
+    function removeCssClass(div) {
+      if (div) div.removeClass(getCssClass(div));
+    }
 
 
-		function setEditDivValue(editDiv, spot) {//设置锚点信息表单的初始值，新增或编辑时调用，传入spot对象
-			editDiv.find(".adspot_tab1").removeClass("adspot_tab_selected");
-			editDiv.find(".adspot_tab2").removeClass("adspot_tab_selected");
-			editDiv.find("input:text").val("");
-			editDiv.find("ul.adspot_search_items").remove();
-			editDiv.find("div.adspot_search_noresult").hide();
-			editDiv.find("div.adspot_search_loader").hide();
-			editDiv.find("input.link_addr").val("");
-			editDiv.find("input.link_addr").removeClass("input_warning");
-			editDiv.find("input.link_title").val("");
-			editDiv.find("input.link_thumb").val("");
-			editDiv.find("input.link_thumb").removeClass("input_warning");
-			editDiv.find("textarea.link_desc").val("");
-			editDiv.find("div.adspot_img_preview img").attr("src", "");
+    //绑定展示广告事件
+    function bindShowSpotEvent(spotDiv) {
+      spotDiv.unbind("hover");
+      spotDiv.hover (
+        function() {
+        clearTimeout(kb_timeoutId);
+        $(this).show();
+      },
+      function() {
+        kb_timeoutId = setTimeout(function() {
+          clearTimeout(kb_timeoutId);
+          spotDiv.fadeOut(150);
+        }, FADE_INTERVAL);
+      }
+      );
+    }
 
-			removeCssClass(editDiv.find("div.tab_con_link"));
-			if (spot.type == SPOT_TYPE_SPACE) {
-				editDiv.find("div.adspot_link_more_info").hide();
-				editDiv.find("a.adspot_tab1").trigger("click");
-			} else if (spot.type == SPOT_TYPE_LINK) {
-				editDiv.find("input.link_addr").val(spot.link_addr);
-				editDiv.find("input.link_title").val(spot.link_title);
-				editDiv.find("input.link_thumb").val(spot.link_thumb);
-				editDiv.find("div.adspot_img_preview img").attr("src", spot.link_thumb);
-				editDiv.find("textarea.link_desc").val(spot.link_desc);
-				editDiv.find("div.adspot_link_more_info").show();
-				if (spot.link_css) {
-					editDiv.find("div.tab_con_link").addClass("adspot_link_" + spot.link_css);
-				}
-				editDiv.find("div.adspot_tab_action").show();
-				editDiv.find("a.adspot_tab2").trigger("click");
-			} else {
-				editDiv.find("div.tab_con_product input:text").val(spot.search_tag);
-				var pdct = {pid: spot.pid, pname: spot.pdct_name, pdct_thumb: spot.pdct_thumb, pdct_price: spot.pdct_price, aname: spot.advname};
-				var str = getSearchResultDiv([pdct], false);
-				editDiv.find("div.adspot_search_box").append(str);
-				editDiv.find("div.adspot_link_more_info").hide();
-				editDiv.find("a.adspot_tab1").trigger("click");
-			}
-		}
+    //取消绑定锚点悬浮
+    function unbindDotDivEvent(wrapDiv) {
+      wrapDiv.find("div.adspot_icon").unbind("hover");
+    }
 
-		function getSpotData(sid) {//从adspot_info_detail根据spot-div-id得到spot对象
-			var infoDiv = $("div.adspot_info_detail[spot-div-id=" + sid + "]");
-			var spot = {id: sid};
-			if (infoDiv.find(".adspot_link_title").size() > 0) {
-				spot.type = SPOT_TYPE_LINK;
-				spot.link_addr = getOriginalClickTarget(infoDiv.find("a").attr("href"));
-				spot.link_thumb = infoDiv.find("img").attr("src");
-				spot.link_title = infoDiv.find("h4").text();
-				spot.link_desc = infoDiv.find("p.adspot_link_des").text();
-				spot.link_css = infoDiv.attr("lsc");
-			} else {
-				spot.type = SPOT_TYPE_PRODUCT;
-				spot.pid = infoDiv.find(".adspot_layer_right h1").attr("pid");
-				spot.pdct_thumb = infoDiv.find(".adspot_layer_left img").attr("src");
-				spot.pdct_addr = infoDiv.find(".adspot_layer_left a").attr("href");
-				spot.pdct_name = infoDiv.find(".adspot_layer_right h1").text();
-				spot.pdct_price = infoDiv.find(".adspot_layer_price span").text();
-				spot.advname = infoDiv.find(".adspot_layer_source a").text();
-				spot.advlink = infoDiv.find(".adspot_layer_source a").attr("href");
-				spot.search_tag = infoDiv.find(".adspot_layer_right h1").attr("search_tag");
-			}
-			return spot;
-		}
+    //绑定锚点悬浮事件
+    function bindDotDivEvent(wrapDiv) {
+      var dotDiv = wrapDiv.find("div.adspot_icon");
+      dotDiv.unbind("hover");
+      dotDiv.hover(
+        function() {
+        $(this).css("opacity", "1");
 
-		//包装图片
-		function wrapperImg(img, imageInfo, index) {
-			spots = imageInfo.spots;
-			modify = imageInfo.modify;
+        var offset = $(this).position();
+        var id = $(this).attr("adspot-id");
+        var pIdDiv = $("div[spot-div-id=" + id + "]");
 
-			var wrapDivStr = "<div class='adspot_wrapper' adspot-img-index='" + index + "' style='width:" + img.width() + "px;height:" + img.height() + "px;'></div>";
-			var logoDivStr = "<div class='adspot_btn_logo'><a href='http://www.adspot.cn' target='_blank'>访问Adpot</a> </div>";
-			var newDivStr = "<div class='adspot_btn_add_dot'><a title='进入添加模式'>添加锚点</a></div>";
+        //获取该点属于那个图片
+        var spotImgIndex = $(this).parent().attr("adspot-img-index");
+        //设置显示的spot是由那个图片下的锚点触发。
+        pIdDiv.attr("adspot-img-index", spotImgIndex);
+        bindShowSpotEvent(pIdDiv);
+        pIdDiv.css({left:offset.left + 24, top:offset.top + 24});
 
-			img.addClass("adSpotImgWrap");
-			if (img.parent().is("a")) {
-				img.parent().wrap(wrapDivStr); //包装图片
-			} else {
-				img.wrap(wrapDivStr);
-			}
+        clearTimeout(kb_timeoutId);
+        $("div.adspot_info_detail").not(pIdDiv).fadeOut(150);
+        if (pIdDiv.css("display") == "none") {
+          pIdDiv.fadeIn(150);
+        }
 
-			if (need_log() && imageInfo.imgid) log_image_impression(imageInfo.imgid);
+        var product_id = pIdDiv.find("h1").attr("pid");
+        if (need_log()) log_spot_hover(id, product_id);
+      },
+      function() {
+        $(this).css("opacity", "0.7");
+        var id = $(this).attr("adspot-id");
 
-			var wrapDiv = img.parents("div.adspot_wrapper");
-			for(var i in spots) {
-				var spot = spots[i];
-				if (spot.type) {
-					wrapDiv.append(getDotDiv(spot, img, false));
+        kb_timeoutId = setTimeout(function() {
+          clearTimeout(kb_timeoutId);
+          var pIdDiv = $("div[spot-div-id=" + id + "]");
+          if (pIdDiv.css("display") == "block") {
+            pIdDiv.fadeOut(150);
+          }
+        }, FADE_INTERVAL);
+      }
+      );
+    }
 
-					if (!$(document.body).find("div.adspot_info_detail").is("div[spot-div-id=" + spot.id + "]")){
-						wrapDiv.append(getSpotDiv(spot, modify));
-					}
-					var infoDiv = $("div.adspot_info_detail[spot-div-id=" + spot.id + "]");
-					infoDiv.attr("adspot-img-index", index);
-				}
-			}
+    //绑定左上角的新增按钮事件。
+    function bindNewDivEvent(wrapDiv) {
+      var newBtn = wrapDiv.find(".adspot_btn_add_dot a");
+      newBtn.unbind("click");
+      newBtn.click(function(e) {
+        //e.preventDefault();
+        if ($(this).parent().hasClass("adspot_btn_add_clicked")) {
+          unbindImgDivEvent(wrapDiv); //取消页面点击添加锚点事件。
+          bindDotDivEvent(wrapDiv);  //绑定鼠标移到锚点，显示对应广告事件。
+          newBtn.attr("title", "进入添加模式");
+        } else {
+          bindImgDivEvent(wrapDiv);
+          unbindDotDivEvent(wrapDiv);
+          newBtn.attr("title", "进入正常模式");
+          $("div.adspot_info_detail").fadeOut(150);
+        }
+        $(this).parent().toggleClass("adspot_btn_add_clicked");
+      });
+    }
 
-			wrapDiv.append(logoDivStr);
-			if (modify) {
-				wrapDiv.append(newDivStr).append(getEditDiv()).append(getConfirmDiv());
-			}
+    //绑定左上角的新增按钮事件。
+    function unbindNewDivEvent(wrapDiv) {
+      wrapDiv.find(".adspot_btn_add_dot a").unbind("click");
+    }
 
-			bindNewDivEvent(wrapDiv); //绑定左上角点击事件，以便图片处于编辑或者查看状态。
-			bindDotDivEvent(wrapDiv); //绑定鼠标移到锚点，显示对应广告事件。
-			return wrapDiv;
-		}
+    function setEditDivValue(editDiv, spot) {//设置锚点信息表单的初始值，新增或编辑时调用，传入spot对象
+      editDiv.find(".adspot_tab1").removeClass("adspot_tab_selected");
+      editDiv.find(".adspot_tab2").removeClass("adspot_tab_selected");
+      editDiv.find("input:text").val("");
+      editDiv.find("ul.adspot_search_items").remove();
+      editDiv.find("div.adspot_search_noresult").hide();
+      editDiv.find("div.adspot_search_loader").hide();
+      editDiv.find("input.link_addr").val("");
+      editDiv.find("input.link_addr").removeClass("input_warning");
+      editDiv.find("input.link_title").val("");
+      if (spot.link_css && spot.link_css == 'soundcloud') {
+        editDiv.find("input.link_thumb").hide();
+      } else {
+        editDiv.find("input.link_thumb").val("");
+        editDiv.find("input.link_thumb").removeClass("input_warning");
+      }
+      editDiv.find("textarea.link_desc").val("");
 
-		function refreshDots(wrapDiv) {
-			var logo_area = wrapDiv.find(".adspot_icon");
-			wrapDiv.hover(
-					function() { 
-						logo_area.fadeIn(100); 
-					},	
-					function() { 
-						logo_area.fadeOut(100); 
-					}
-					);
-		}
+      var thumb_img = editDiv.find("div.adspot_img_preview img");
+      thumb_img.attr("src", "");
+      thumb_img.hide();
+      editDiv.find("div.adspot_sc_player").hide();
+      editDiv.find("div.adspot_sc_player").html("");
 
-		//初始化图的锚点
-		function initImg(img, imageInfo, index) {
-			var wrapDiv = wrapperImg(img, imageInfo, index);
-			var logo_area = wrapDiv.find(".adspot_btn_logo,.adspot_icon,.adspot_btn_add_dot");
-			wrapDiv.unbind("hover");
-			wrapDiv.hover(
-					function(e) { 
-						logo_area.fadeIn(100); 
-						if (need_log() && imageInfo.imgid) log_image_hover(imageInfo.imgid);
-					},	
-					function(e) { 
-						//alert ('here');
-						//$(".adspot_layer_info adspot_info_detail").mouseenter(e);
-						logo_area.fadeOut(100); 
-					}
-					);
-		}
+      removeCssClass(editDiv.find("div.tab_con_link"));
+      if (spot.type == SPOT_TYPE_SPACE) {
+        editDiv.find("div.adspot_link_more_info").hide();
+        editDiv.find("a.adspot_tab1").trigger("click");
+      } else if (spot.type == SPOT_TYPE_LINK) {
+        editDiv.find("input.link_addr").val(spot.link_addr);
+        editDiv.find("input.link_title").val(spot.link_title);
+        editDiv.find("textarea.link_desc").val(spot.link_desc);
+        if (spot.link_css) {
+          editDiv.find("div.tab_con_link").addClass("adspot_link_" + spot.link_css);
+          if (spot.link_css == "soundcloud") {
+            var trackid = spot.link_extra;
+            editDiv.find("input.link_extra").val(trackid);
+            $("div.adspot_sc_player").html(getSoundCloudPlayer(trackid));
+            $("div.adspot_sc_player").show();
+          } else {
+            if (spot.link_thumb) {
+              editDiv.find("input.link_thumb").val(spot.link_thumb);
+              thumb_img.attr("src", spot.link_thumb);
+              thumb_img.show();
+            }
+          }
+        }
+        editDiv.find("div.adspot_link_more_info").show();
+        editDiv.find("div.adspot_tab_action").show();
+        editDiv.find("a.adspot_tab2").trigger("click");
+      } else {
+        editDiv.find("div.tab_con_product input:text").val(spot.search_tag);
+        var pdct = {pid: spot.pid, pname: spot.pdct_name, pdct_thumb: spot.pdct_thumb, pdct_price: spot.pdct_price, aname: spot.advname};
+        var str = getSearchResultDiv([pdct], false);
+        editDiv.find("div.adspot_search_box").append(str);
+        editDiv.find("div.adspot_link_more_info").hide();
+        editDiv.find("a.adspot_tab1").trigger("click");
+      }
+    }
 
-		function prepareImg(img, imgArr) {
-			kb_total_images++;
-			img_dom = img[0];
-			if (img_dom.complete) { // 如果图片已经存在于浏览器缓存，直接调用回调函数
-				imgArr.push(img);
-				return;
-			}
-			img_dom.onload = function () {
-				imgArr.push(img);
-			}
-		}
+    function getSpotData(sid) {//从adspot_info_detail根据spot-div-id得到spot对象
+      var infoDiv = $("div.adspot_info_detail[spot-div-id=" + sid + "]");
+      var spot = {id: sid};
+      if (infoDiv.find(".adspot_link_title").size() > 0) {
+        spot.type = SPOT_TYPE_LINK;
+        spot.link_addr = getOriginalClickTarget(infoDiv.find("a").attr("href"));
+        spot.link_thumb = infoDiv.find("img").attr("src");
+        spot.link_title = infoDiv.find("h4").text();
+        spot.link_desc = infoDiv.find("p.adspot_link_des").text();
+        spot.link_css = infoDiv.attr("lsc");
+        if (spot.link_css == 'soundcloud') {
+          spot.link_extra = infoDiv.find(".adspot_play_btn").attr("vid");
+        }
+      } else {
+        spot.type = SPOT_TYPE_PRODUCT;
+        spot.pid = infoDiv.find(".adspot_layer_right h1").attr("pid");
+        spot.pstatus = infoDiv.find(".adspot_layer_right h1").attr("pstatus");
+        spot.pdct_thumb = infoDiv.find(".adspot_layer_left img").attr("src");
+        spot.pdct_addr = infoDiv.find(".adspot_layer_left a").attr("href");
+        spot.pdct_name = infoDiv.find(".adspot_layer_right h1").text();
+        spot.pdct_price = infoDiv.find(".adspot_layer_price span").text();
+        spot.advname = infoDiv.find(".adspot_layer_source a").text();
+        spot.advlink = infoDiv.find(".adspot_layer_source a").attr("href");
+        spot.search_tag = infoDiv.find(".adspot_layer_right h1").attr("search_tag");
+        spot.pstatus = infoDiv.find(".adspot_layer_right h1").attr("pstatus");//产品状态
+      }
+      return spot;
+    }
 
-		function images_ready(imgArr) {
-			return kb_total_images == imgArr.length ? true : false;
-		}
+    //包装图片
+    function wrapperImg(img, imageInfo, index) {
+      spots = imageInfo.spots;
+      modify = imageInfo.modify;
 
-		function querySpots(imgArr) {
-			var length = imgArr.length;
-			if (length <= 0) return;
+      var wrapDivStr = "<div class='adspot_wrapper' adspot-img-index='" + index + "' style='width:" + img.width() + "px;height:" + img.height() + "px;'></div>";
+      var logoDivStr = "<div class='adspot_btn_logo'><a href='http://www.adspot.cn' target='_blank'>访问Adpot</a> </div>";
+      var newDivStr = "<div class='adspot_btn_add_dot'><a title='进入添加模式'>添加锚点</a></div>";
 
-			var imgArrJson = '';
-			var imgIndex = 0;
-			for (var i in imgArr) {
-				var img = imgArr[i];
-				var src = img.attr("original_path") ? img.attr("original_path") : getAbsoluteURL(img.attr("src"));
-				if (imgArrJson.indexOf(src) >= 0) continue;
-				var width = img.width();
-				var height = img.height();
-				var excluded_thumb = img.attr("excluded_spot");//特定标记用于排除标点
-				if (width < 200 || height < 200 || excluded_thumb) continue; //小于一定尺寸的图片不打点
+      img.addClass("adSpotImgWrap");
+      if (img.parent().is("a")) {
+        img.parent().wrap(wrapDivStr); //包装图片
+      } else {
+        img.wrap(wrapDivStr);
+      }
 
-				var strVal = (imgIndex++ > 0) ? "," : "";
-				strVal += '{"src":"' + src + '","width":' + width + ',"height":' + height +'}';
-					imgArrJson += strVal;
-				}
+      if (need_log() && imageInfo.imgid) log_image_impression(imageInfo.imgid);
 
-				imgArrJson = "[" + imgArrJson + "]";
-				var dataUrl = dataHost + "spot-data.php?wbcode=" + wbCode + "&imgs=" + imgArrJson;
+      var wrapDiv = img.parents("div.adspot_wrapper");
+      for(var i in spots) {
+        var spot = spots[i];
+        if (spot.type) {
+          wrapDiv.append(getDotDiv(spot, img, false));
 
-				$.getJSON(dataUrl + "&callback=?", function(tagged_images) {
-					for (var i=0; i<length; i++) {
-						for (var j=0; j<tagged_images.length; j++) {
-							var _src = imgArr[i].attr("original_path") ? imgArr[i].attr("original_path") : getAbsoluteURL(imgArr[i].attr("src"));
-							if (tagged_images[j].remote_addr == _src) {
-								initImg(imgArr[i], tagged_images[j], i);
-							}
-						}
-					}
-					$(".adspot_info_detail").each(function() {
-						bindSpotDivEvent($(this)); //绑定锚点信息层上的事件
-					});
-				});
-			}
+          if (!$(document.body).find("div.adspot_info_detail").is("div[spot-div-id=" + spot.id + "]")){
+            wrapDiv.append(getSpotDiv(spot, modify));
+          }
+          var infoDiv = $("div.adspot_info_detail[spot-div-id=" + spot.id + "]");
+          infoDiv.attr("adspot-img-index", index);
+        }
+      }
 
-			var kb_timeoutId = 0;
-			var FADE_INTERVAL = 800;
-			var kb_total_images = 0;
+      wrapDiv.append(logoDivStr);
+      if (modify) {
+        wrapDiv.append(newDivStr).append(getEditDiv());
+      }
 
-			//查找所有图片(img),过滤不符合尺寸的图片
-			(function() {
-				var imgArr = new Array(); //存储符合规则的图片img对象。
-				var imgIndex = 0;
-				var imgArrJson = ""; //把符合规则的图片数据包装成josn数据格式字符串。
+      bindNewDivEvent(wrapDiv); //绑定左上角点击事件，以便图片处于编辑或者查看状态。
+      bindDotDivEvent(wrapDiv); //绑定鼠标移到锚点，显示对应广告事件。
+      return wrapDiv;
+    }
 
-				$("img").each(function() {
-					prepareImg($(this), imgArr);
-				});
+    function refreshDots(wrapDiv) {
+      var logo_area = wrapDiv.find(".adspot_icon");
+      wrapDiv.hover(
+        function() { 
+        logo_area.fadeIn(100); 
+      },	
+      function() { 
+        logo_area.fadeOut(100); 
+      }
+      );
+    }
 
-				querySpotsFn = setInterval(function() {
-					if (images_ready(imgArr)) {
-						clearInterval(querySpotsFn);
-						querySpots(imgArr);
-					}
-				}, 100);
+    //初始化图的锚点
+    function initImg(img, imageInfo, index) {
+      var wrapDiv = wrapperImg(img, imageInfo, index);
+      var logo_area = wrapDiv.find(".adspot_btn_logo,.adspot_icon,.adspot_btn_add_dot");
+      wrapDiv.unbind("hover");
+      wrapDiv.hover(
+        function(e) { 
+        logo_area.fadeIn(100); 
+        if (need_log() && imageInfo.imgid) log_image_hover(imageInfo.imgid);
+      },	
+      function(e) { 
+        //$(".adspot_layer_info adspot_info_detail").mouseenter(e);
+        logo_area.fadeOut(100); 
+      }
+      );
+    }
 
-				$.ajaxSetup({ 
-					timeout: 10000
-				});
-			})();
-		};
+    function prepareImg(img, imgArr) {
+      if (isEmpty(img.attr('src'))) { return; }
+      kb_total_images++;
+      img_dom = img[0];
+      if (img_dom.complete) { // 如果图片已经存在于浏览器缓存，直接调用回调函数
+        imgArr.push(img);
+        return;
+      }
+      img_dom.onload = function () {
+        imgArr.push(img);
+      }
+    }
 
-		(function() {
+    function images_ready(imgArr) {
+      return kb_total_images == imgArr.length ? true : false;
+    }
 
-			if (!wbCode || wbCode.length != 10) { return; };
-			var cssLink, jqueryScript, clearFn;
+    function querySpots(imgArr) {
+      var length = imgArr.length;
+      if (length <= 0) return;
 
-			//添加css
-			cssLink = document.createElement("link");
-			cssLink.rel = "stylesheet";
-			cssLink.type = "text/css";
-			cssLink.href = resHost + "adspot.css";
-			cssLink.media = "all";
+      var imgArrJson = '';
+      var imgIndex = 0;
+      for (var i in imgArr) {
+        var img = imgArr[i];
+        var src = img.attr("original_path") ? img.attr("original_path") : getAbsoluteURL(img.attr("src"));
+        if (imgArrJson.indexOf(src) >= 0) continue;
+        var width = img.width();
+        var height = img.height();
+        var excluded_thumb = img.attr("excluded_spot");//特定标记用于排除标点
+        if (width < 200 || height < 200 || excluded_thumb) continue; //小于一定尺寸的图片不打点
 
-			document.documentElement.getElementsByTagName("HEAD")[0].appendChild(cssLink);
+        var strVal = (imgIndex++ > 0) ? "," : "";
+        strVal += '{"src":"' + src + '","width":' + width + ',"height":' + height +'}';
+        imgArrJson += strVal;
+      }
 
-			//页面上所有图片加载完毕后再执行
-			if (typeof jQuery !== "undefined" && check_jquery_version("1.7.1")) {
-				startAdspot(jQuery);
-			} else {
-				jqueryScript = document.createElement("script");
-				jqueryScript.src = "http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js";
-				document.documentElement.getElementsByTagName("HEAD")[0].appendChild(jqueryScript);
-				clearFn = setInterval(function() {
-					if (typeof jQuery !== "undefined" && check_jquery_version("1.7.1")) {
-						clearInterval(clearFn);
-						startAdspot(jQuery);
-					}
-				}, 25);
-			}
-		})();
+      imgArrJson = "[" + imgArrJson + "]";
+      var dataUrl = dataHost + "spot-data.php?wbcode=" + wbCode + "&imgs=" + imgArrJson;
 
-	})();
+      $.getJSON(dataUrl + "&callback=?", function(tagged_images) {
+        for (var i=0; i<length; i++) {
+          for (var j=0; j<tagged_images.length; j++) {
+            var _src = imgArr[i].attr("original_path") ? imgArr[i].attr("original_path") : getAbsoluteURL(imgArr[i].attr("src"));
+            if (tagged_images[j].remote_addr == _src) {
+              initImg(imgArr[i], tagged_images[j], i);
+            }
+          }
+        }
+        $(".adspot_info_detail").each(function() {
+          bindSpotDivEvent($(this)); //绑定锚点信息层上的事件
+        });
+      });
+    }
+
+    var kb_timeoutId = 0;
+    var FADE_INTERVAL = 800;
+    var kb_total_images = 0;
+
+    //查找所有图片(img),过滤不符合尺寸的图片
+    (function() {
+      var imgArr = new Array(); //存储符合规则的图片img对象。
+      var imgIndex = 0;
+      var imgArrJson = ""; //把符合规则的图片数据包装成josn数据格式字符串。
+
+      $("img").each(function() {
+        prepareImg($(this), imgArr);
+      });
+
+      querySpotsFn = setInterval(function() {
+        if (images_ready(imgArr)) {
+          clearInterval(querySpotsFn);
+          querySpots(imgArr);
+        }
+      }, 100);
+
+      $.ajaxSetup({ 
+        timeout: 30000
+      });
+    })();
+  };
+
+  (function() {
+
+    if (!wbCode || wbCode.length != 10) { return; };
+    var cssLink, jqueryScript, clearFn;
+
+    //添加css
+    cssLink = document.createElement("link");
+    cssLink.rel = "stylesheet";
+    cssLink.type = "text/css";
+    cssLink.href = resHost + "adspot.css";
+    cssLink.media = "all";
+
+    document.documentElement.getElementsByTagName("HEAD")[0].appendChild(cssLink);
+
+    //页面上所有图片加载完毕后再执行
+    if (typeof jQuery !== "undefined" && check_jquery_version("1.7.1")) {
+      startAdspot(jQuery);
+    } else {
+      jqueryScript = document.createElement("script");
+      jqueryScript.src = "http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js";
+      document.documentElement.getElementsByTagName("HEAD")[0].appendChild(jqueryScript);
+      clearFn = setInterval(function() {
+        if (typeof jQuery !== "undefined" && check_jquery_version("1.7.1")) {
+          clearInterval(clearFn);
+          startAdspot(jQuery);
+        }
+      }, 25);
+    }
+  })();
+
+})();

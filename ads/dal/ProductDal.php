@@ -3,8 +3,11 @@ require_once 'DBModel.php';
 
 class ProductDal extends DBModel {
 	
+  public static $STATUS_ACTIVE = 1;
+  public static $STATUS_PAUSED = 2;
+    
 	function getProduct($pid) {
-		$sql = "select p.id as pid,pcode,pname,brand,pdct_price,pricing,unit_price,upper_limit,pdct_thumb,click_target,p.updated_at,p.created_at,a.name as aname from products p inner join advertisers a on p.advertiser_id=a.id where p.id=" . $this->safeStr($pid);
+		$sql = "select p.id as pid,pcode,pname,brand,pdct_price,pricing,unit_price,upper_limit,pdct_thumb,click_target,p.updated_at,p.created_at,a.name as aname,p.status from products p inner join advertisers a on p.advertiser_id=a.id where p.id=" . $this->safeStr($pid);
 		$this->logger->debug($sql);
 		$rs = mysql_query($sql, $this->conn);
 		$row = mysql_fetch_assoc($rs);
@@ -17,7 +20,7 @@ class ProductDal extends DBModel {
 
   function findProductsByTags($tags, $last) {
     $tagstr = implode("','", explode(" ", $tags));
-    $sql = "select pt.product_id,count(distinct t.id) as matchs from tags t inner join products_tags pt on t.id=pt.tag_id where t.tname in ('" . $tagstr . "') group by pt.product_id order by matchs desc limit " . $last. ",5"; 
+    $sql = "select pt.product_id,count(distinct t.id) as matchs from tags t inner join products_tags pt on t.id=pt.tag_id inner join products p on pt.product_id=p.id where t.tname in ('" . $tagstr . "') and p.status=1 group by pt.product_id order by matchs desc limit " . $last. ",5"; 
     $this->logger->debug($sql);
 
     $rs = mysql_query($sql, $this->conn);

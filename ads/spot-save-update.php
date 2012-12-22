@@ -6,6 +6,7 @@ require_once 'Utils.php';
 require_once 'dal/WebsiteDal.php';
 require_once 'dal/TaggedImageDal.php';
 require_once 'dal/SpotDal.php';
+require_once 'dal/ProductDal.php';
 
 $logger = Logger::getLogger("file");
 
@@ -16,6 +17,7 @@ $link_thumb   = _get("link_thumb");	//
 $link_desc   = _get("link_desc");	//
 $link_title   = _get("link_title");	//
 $link_css = _get("link_css");
+$link_extra = _get("link_extra"); //额外信息，如soundcloud的track id
 $left = _get("left");
 $top  = _get("top");
 $sid = _get('id'); //spot id
@@ -43,11 +45,16 @@ mysql_select_db($mysql_adspot_db, $con);
 $websiteDal = new WebsiteDal($con);
 $imageDal = new TaggedImageDal($con);
 $spotDal  = new SpotDal($con);
+$productDal = new ProductDal($con);
 
 $website = $websiteDal->getWebsite($wbcode);
 
 if (!$websiteDal->verify_host_url($website['url'])) { exit; }
 if (!$websiteDal->verify_host_user()) { exit; }
+//验证产品可用并状态正常
+if ($pid) {
+
+}
 
 
 $taggedImage = $imageDal->getImage($imgSrc, $website['wid']);
@@ -62,6 +69,7 @@ if (empty($taggedImage)) {
 	$imageDal->saveImage($taggedImage);
 
   create_thumbnail_60($imgSrc, $taggedImage['imgid']);
+  create_thumbnail_100($imgSrc, $taggedImage['imgid']);
   create_thumbnail_200($imgSrc, $taggedImage['imgid']);
   create_thumbnail_600($imgSrc, $taggedImage['imgid']);
 }
@@ -80,8 +88,7 @@ $spot['link_desc'] = $link_desc;
 $spot['link_thumb'] = $link_thumb;
 $spot['link_title'] = $link_title;
 $spot['link_css'] = $link_css;
-#$spot['marginy'] = $top;
-#$spot['marginx'] = $left;
+$spot['link_extra'] = $link_extra;
 $spot['pid'] = $pid;
 $spot['search_tag'] = $search_tag;
 $spot['imgid'] = $taggedImage['imgid'];
@@ -92,8 +99,10 @@ if (is_numeric($sid)) {
 
 //validate if the url user updated can match the original css
 $cssobj = parseLinkAddr($spot['link_addr']);
-$spot['link_css'] = $cssobj['css'];
-#print_r($spot);
+if (!empty($cssobj['css'])) {
+  $spot['link_css'] = $cssobj['css'];
+}
+//print_r($spot);
 if (empty($tspot)) {
 	$spotDal->save($spot);
 } else {
@@ -103,17 +112,25 @@ if (empty($tspot)) {
 }
 
 if ($spot['type'] == SpotDal::SPOT_TYPE_PRODUCT) {
-	$spot = $spotDal->getProductSpot($spot['id']);
+  $spot = $spotDal->getProductSpot($spot['id']);
+  //如果是暂停状态的product类型锚点，返回价格为0
+  if ($spot['pstatus'] == ProductDal::$STATUS_PAUSED) {
+    $spot['pdct_price'] = 0;
+  }
 } else {
-	$spot = $spotDal->getSpot($spot['id']);
+  $spot = $spotDal->getSpot($spot['id']);
 }
 
 $spot['first'] = empty($tspot) ? 1 : 0;
 
 //Only for video link. Return player and video ID for JS to invoke
-if (!empty($spot['link_css']) && $spot['link_css'] == 'video') {
-	$spot['player'] = $cssobj['player'];
-	$spot['vid'] = $cssobj['vid'];
+if (!empty($spot['link_css'])) {
+  if ($spot['link_css'] == 'video') {
+    $spot['player'] = $cssobj['player'];
+    $spot['vid'] = $cssobj['vid'];
+  } elseif ($spot['link_css'] == 'soundcloud') {
+    $spot['player'] = 'soundcloud';
+  }
 }
 
 extend_cookie_expiry();//extend the user code cookie for a more hour

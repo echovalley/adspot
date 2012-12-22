@@ -60,6 +60,7 @@ class WebsiteDal extends DBModel {
     if (empty($_COOKIE['u'])) return false;
     $user_code = $_COOKIE['u'];
     $host = _getDomainByReferrer();
+    $this->logger->debug($host);
     if (empty($host)) return false;
 
     if ($host == get_backend_host()) return true;
